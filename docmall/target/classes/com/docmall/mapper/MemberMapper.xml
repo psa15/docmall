@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.mapper.MemberMapper">
+	
+	<!-- 회원가입 저장 parameterType 속성은 전부 생략 가능 -->
+	<insert id="join">
+	
+	INSERT INTO TBL_MEMBER
+	    ( M_USERID, M_USERNAME, M_PASSWD, M_POSTNUM, M_ADDR, 
+	    	M_ADDR_D, M_TEL, M_NICKNAME, M_EMAIL, M_EMAIL_ACCEPT )
+	VALUES
+	    (
+	    	#{m_userid}, #{m_username}, #{m_passwd}, #{m_postnum}, #{m_addr},  
+	    	#{m_addr_d}, #{m_tel}, #{m_nickname}, #{m_email}, #{m_email_accept}
+	    )
+	    
+	</insert>
+	
+	<!-- 아이디 존재여부 작업(중복체크) -->
+	<select id="idCheck" resultType="String">
+	
+		SELECT M_USERID 
+		FROM TBL_MEMBER 
+		WHERE M_USERID = #{m_userid}
+		
+	</select>
+	
+</mapper>

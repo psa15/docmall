@@ -215,6 +215,23 @@
 		    <version>0.4.8</version>
 		</dependency>
 		
+		<!-- 이론설명 나중에 할 예정 -->
+		<!-- 메일 인증코드 관련 라이브러리 -->
+		<dependency>
+		    <groupId>com.sun.mail</groupId>
+		    <artifactId>javax.mail</artifactId>
+		    <version>1.5.6</version>
+		</dependency>
+		<!-- 스케줄링, 메일발송, 캐시 연동,Velocity 등 부가기능제공 
+				-> 아래 설정 때문에 root-context의 class="org.springframework.mail.javamail.JavaMailSenderImpl" 인식  -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-context-support</artifactId>
+		    <version>${org.springframework-version}</version>
+		</dependency>
+		
+		
+		
 		<!-- 추가 끝 -->
 		
 		<!-- Test -->
