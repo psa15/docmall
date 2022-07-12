@@ -12,6 +12,7 @@ public class EmailDTO {
 	private String subject; //메일 제목
 	private String message; //메일 내용
 	
+	//기본값 지정
 	public EmailDTO() {
 		this.senderName = "DocMall";
 		this.senderMail = "DocMall"; //gmail smpt메일서버 정보 (현업 -> 회사 메일 서버 정보 이용)

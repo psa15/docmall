@@ -25,4 +25,15 @@
 		
 	</select>
 	
+	<!-- 로그인 정보 인증 작업 -->
+	<select id="login_ok" resultType="com.docmall.domain.MemberVO" parameterType="com.docmall.dto.LoginDTO">
+		
+		SELECT M_USERID, M_USERNAME, M_PASSWD, M_POSTNUM, M_ADDR, 
+				M_ADDR_D, M_TEL, M_NICKNAME, M_EMAIL, M_EMAIL_ACCEPT, 
+				M_POINT, M_REGDATE, M_UPDATEDATE, M_LASTDATE, M_AUTHCODE 
+		FROM TBL_MEMBER 
+		WHERE M_USERID = #{m_userid} <!-- 비밀번호를 암호화 하여 저장하지 않는다면 AND M_PASSWD = #{m_passwd} -->
+		
+	</select>
+	
 </mapper>

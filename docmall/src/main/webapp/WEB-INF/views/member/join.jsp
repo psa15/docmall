@@ -90,9 +90,15 @@
 		    </div>
 		  </div>
 		  <div class="form-group row">
-		    <label for="m_authcode" class="col-sm-2 col-form-label">이메일 인증코드</label>
-		    <div class="col-sm-10">
+		  	<label for="m_authcode" class="col-sm-2 col-form-label">이메일 인증코드</label>
+		  	<div class="col-sm-3">
+		      <button type="button" class="form-control btn btn-info" id="btnAuthcode" > 메일 인증 요청 </button>
+		    </div>		    
+		    <div class="col-sm-4">
 		      <input type="text" class="form-control" id="m_authcode" name="m_authcode">
+		    </div>
+		    <div class="col-sm-3">
+		      <button type="button" class="form-control btn btn-info" id="btnConfirmAuthcode">메일 인증 확인 </button>
 		    </div>
 		  </div>
 		  <div class="form-group row">
@@ -130,7 +136,7 @@
 		    </div>	    		    
 		  </div>
 		  
-	      <button type="button" class="btn btn-dark text-center" id="joinSend">회원가입</button>
+	      <button type="button" class="btn btn-dark text-center" id="btnJoin">회원가입</button>
 	      		
 		</form>
 	  </div>
@@ -154,7 +160,7 @@
 			let joinForm = $("#joinForm");
 
 			//회원가입 저장하기 - type이 button일때만 폼참조해서 submit메소드 사용 가능
-			$("#joinSend").on("click", function(){
+			$("#btnJoin").on("click", function(){
 				//console.log("회원가입하기"); 확인 완
 
 				//유효성검사
@@ -200,6 +206,61 @@
 
 							$("#idCheckStatus").html("<b>사용불가능</b>");
 							isIDCheck = false;
+						}
+					}
+				});
+			});
+
+			//메일 인증코드 요청
+			$("#btnAuthcode").on("click", function(){
+
+				if($("#m_email").val() == "") {
+					alert("메일 주소를 입력하세요")
+					return; //진행되면 안되니까
+				}
+
+				$.ajax({
+					url: '/email/send', //emailcontroller의 주소
+					type: 'get',
+					dataType: 'text',
+					data: { receiveMail : $("#m_email").val() }, 
+					/*
+					url주소의 파라미터 
+					 - EmailDTO dto = new EmailDTO(); : 스프링에서 자동 객체 생성
+					 	- receiveMail 제외 전부 기본값 생성되어있음
+					 	- $("#m_email") : form태그의 사용자가 입력한 이메일주소, 의 값(.val())
+					*/
+					success: function(result) {
+						if(result == "success") {
+							alert("메일이 발송되었으니 인증코드를 확인해주세요");
+						} else {
+							alert("메일 발송 실패되었으니 메일주소 확인 및 관리자에게 문의바랍니다");
+						}
+					}
+				});
+			});
+
+			
+			//상태변수 - 최종 회원가입 버튼 클릭시 다시 사용 예정
+			let isAuthCode = false;
+
+			//메일 인증 확인
+			$("#btnConfirmAuthcode").on("click", function(){
+
+				let authCode = $("#m_authcode").val();
+
+				$.ajax ({
+					url: '/member/confirmAuthCode',
+					type: 'post',
+					dataType: 'text',
+					data: { uAuthCode : authCode }, //파라미터는 스프링의 메소드와 일치
+					success: function(result) {
+						if(result == "success") {
+							alert("인증코드가 일치합니다.");
+							isAuthCode = true;
+						} else if(result == "fail") {
+							alert("인증코드가 다릅니다. \n 메일인증요청을 다시해주세요");
+							isAuthCode = false;
 						}
 					}
 				});

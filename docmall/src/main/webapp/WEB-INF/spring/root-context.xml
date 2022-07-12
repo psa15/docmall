@@ -53,14 +53,18 @@
 	
 	
 	<!-- 메일인증코드 관련 설정 -->
-	<!-- https://myaccount.google.com/lesssecureapps 보안수준 낮추기설정 -->
+	<!-- https://myaccount.google.com/lesssecureapps 메일 인증방식 변경됨, 2단계 인증, 암호화키 발급받아 사용 -->
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 	  <property name="host" value="smtp.gmail.com" />
 	  <property name="port" value="587" />
-	  <property name="username" value="abc@gmail.com" />
-	  <property name="password" value="1234" />
+	  <property name="username" value="ABC@gmail.com" />
+	  <property name="password" value="" />
 	  <property name="javaMailProperties">
-	  <!-- host, port, username, password, javaMailProperties는 제공되는 필드 -->
+	  <!-- 
+	  	host, port, username, password, javaMailProperties는 제공되는 필드
+	  	보통 실무에서는 서버 정보를 제공해주는 것을 작성하면 됨
+	  	깃허브에 올릴 때 개인정보는 지우고 올리기  특히 username, password
+	  -->
 	  <props>
 	    <prop key="mail.smtp.auth">true</prop>
 	    <prop key="mail.smtp.starttls.enable">true</prop>
