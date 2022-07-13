@@ -163,7 +163,20 @@
 			$("#btnJoin").on("click", function(){
 				//console.log("회원가입하기"); 확인 완
 
-				//유효성검사
+				/*
+				유효성검사
+				 - 폼입력양식 태그 : 데이터 입력여부, 아이디 + 비밀번호 제약조건
+				 */
+				//id중복체크 사용 여부 isIDCheck
+				if(!isIDCheck) {
+					alert("아이디 중복확인을 해주세요");
+					return;
+				}
+				/*메일 인증 확인 여부 isAuthCode
+				if(!isAuthCode) {
+					alert("메일 인증 확인을 해주세요");
+					return;
+				}*/
 
 				//제출
 				joinForm.submit();

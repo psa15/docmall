@@ -71,8 +71,17 @@
 		      <input type="password" class="form-control" id="m_passwd" name="m_passwd">
 		    </div>
 		  </div>		  
-		  
-	      <button type="submit" class="btn btn-dark text-center" id="btnLogin">로그인</button>
+		  <div class="form-group">
+		    <div class="text-center">
+				<button type="submit" class="btn btn-dark text-center" id="btnLogin">로그인</button>
+		    </div>
+		  </div>
+		  <div class="form-group">
+			<div class="text-center">
+				<button type="button" class="btn btn-dark" id="btnSearchIDPW">아이디 및 비밀번호 찾기</button>
+		    </div>
+		  </div>
+	      
 	      		
 		</form>
 	  </div>
@@ -86,7 +95,7 @@
     
     <%-- 클라이언트에서 접근이 가능해야 하기 때문에 resources에 따로 폴더를 만들었고, 
     	원래는 /resources/js/member/join.js 이렇게 경로를 작성해야하지만
-    	resources를 숨기기 위해 servlet-context.xml에 설정을 추가한다 
+    	resources를 숨기기 위해 serlet-context.xml에 설정을 추가한다 
 	<script type="text/javascript" src="/js/member/join.js"></script> --%>
 	
 	<script>
@@ -116,6 +125,12 @@
 
 				return true; // 전송 X 
 
+			});
+
+			//아이디 및 비밀번호 찾기
+			$("#btnSearchIDPW").on("click", function(){
+
+				location.href = "/member/lostIDPw";
 			});
 
 			

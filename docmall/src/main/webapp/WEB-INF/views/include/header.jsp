@@ -13,11 +13,16 @@
     
     <!-- 로그인 후 -->
     <c:if test="${sessionScope.loginStatus != null}">
-    	<a class="p-2 text-dark" href="#">LOGOUT</a> |
+    	<a class="p-2 text-dark" href="/member/logout">LOGOUT[${sessionScope.loginStatus.m_userid}]</a> |
     </c:if>
     
     <!-- 공통 -->
-    <a class="p-2 text-dark" href="#">MYPAGE</a> |
+    <!-- mypage는 로그인을 하든 안하든 보여주고, 로그인을 했을 때만 포인트를 보여주기 위해 안에 if문 사용 -->
+    <a class="p-2 text-dark" href="#">MYPAGE
+    	<c:if test="${sessionScope.loginStatus != null}">
+    		<span style="color:red">포인트: [${sessionScope.loginStatus.m_point}]</span>
+    	</c:if>
+    </a> |
     <a class="p-2 text-dark" href="#">ORDER</a> |
     <a class="p-2 text-dark" href="#">CART</a>
   </nav>

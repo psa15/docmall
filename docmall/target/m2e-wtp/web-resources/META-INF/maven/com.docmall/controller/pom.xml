@@ -215,8 +215,17 @@
 		    <version>0.4.8</version>
 		</dependency>
 		
-		<!-- 이론설명 나중에 할 예정 -->
-		<!-- 메일 인증코드 관련 라이브러리 -->
+		<!-- 메일 주요내용 정리 -->
+		<!-- 
+			스프링 자체에서 메일 기능을 제공하는 기본 인터페이스 MailSender 존재
+			 - SimpleMailMessage만을 이용, 첨부파일 등을 지원 X
+			 -> 그래서, MIME Message를 이용
+		
+			간혹 백신 종류의 프로그램이 동작되어 기능테스트 실패하는 경우도 있음
+			 - 동작중인 백신프로그램 정지 필요
+		 -->
+		
+		<!-- 메일 인증코드 관련 라이브러리 javax.mail.internet.MimeMessage -->
 		<dependency>
 		    <groupId>com.sun.mail</groupId>
 		    <artifactId>javax.mail</artifactId>
@@ -230,6 +239,25 @@
 		    <version>${org.springframework-version}</version>
 		</dependency>
 		
+		<!-- 비밀번호 암호화 기능이 포함되어 있는 라이브러리 -->
+		<!--스프링시큐리티 web 라이브러리-->                          
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>4.1.0.RELEASE</version>
+        </dependency>
+        <!--스프링시큐리티 core 라이브러리-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>4.1.0.RELEASE</version>
+        </dependency>
+        <!--스프링시큐리티 config 라이브러리-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>4.1.0.RELEASE</version>
+        </dependency>
 		
 		
 		<!-- 추가 끝 -->
