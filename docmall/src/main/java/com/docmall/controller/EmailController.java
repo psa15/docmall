@@ -44,7 +44,7 @@ public class EmailController {
 		//메일 보내기 기능
 		try {
 			
-			service.sendMail(dto, authCode);
+			service.sendMail(dto, authCode); //메일 기본정보(받는사람, 보내는 사람 등등) , 인증코드
 			entity = new ResponseEntity<String>("success", HttpStatus.OK);
 			
 		}catch (Exception e) {

@@ -1,8 +1,10 @@
 package com.docmall.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class EmailDTO {
 	
 	//메일에 들어가는 기본 정보

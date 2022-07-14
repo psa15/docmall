@@ -20,7 +20,7 @@ public class EmailServiceImpl implements EmailService {
 	//mailSender : 메일 보내기 위한 객체
 	
 	@Override
-	public void sendMail(EmailDTO dto, String authCode) {
+	public void sendMail(EmailDTO dto, String message) {
 
 		//메일 구성정보(받는사람, 보내는 사람 등)를 담당하는 객체
 		MimeMessage msg = mailSender.createMimeMessage();
@@ -40,7 +40,7 @@ public class EmailServiceImpl implements EmailService {
 			//받았을 때 글자 깨질까봐 인코딩 설정 추가
 			
 			//본문 내용
-			msg.setText(authCode, "utf-8");
+			msg.setText(message, "utf-8");
 			
 			//메일 보내기
 			mailSender.send(msg); //G-Mail보안설정을 낮게 해야 정상적으로 메일 발송됨

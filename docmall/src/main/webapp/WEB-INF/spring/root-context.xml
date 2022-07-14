@@ -57,8 +57,8 @@
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 	  <property name="host" value="smtp.gmail.com" />
 	  <property name="port" value="587" />
-	  <property name="username" value="ABC@gmail.com" />
-	  <property name="password" value="" />
+	  <property name="username" value="ssuuaa.park@gmail.com" />
+	  <property name="password" value="eterycsbuvjywwgc" />
 	  <property name="javaMailProperties">
 	  <!-- 
 	  	host, port, username, password, javaMailProperties는 제공되는 필드
@@ -67,6 +67,10 @@
 	  -->
 	  <props>
 	    <prop key="mail.smtp.auth">true</prop>
+	    <!-- 윈도우즈 운영체제 11버전에 따라 TLS 변환문제가 발생이 되는 듯 추측됨
+	    <prop key="mail.smtp.ssl.trust">smtp.gmail.com</prop>
+	    <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
+	     -->
 	    <prop key="mail.smtp.starttls.enable">true</prop>
 	  </props>
 	  </property>

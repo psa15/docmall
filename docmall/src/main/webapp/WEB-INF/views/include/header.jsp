@@ -14,6 +14,7 @@
     <!-- 로그인 후 -->
     <c:if test="${sessionScope.loginStatus != null}">
     	<a class="p-2 text-dark" href="/member/logout">LOGOUT[${sessionScope.loginStatus.m_userid}]</a> |
+    	<a class="p-2 text-dark" href="/member/confirmPw">MODIFY</a> |
     </c:if>
     
     <!-- 공통 -->

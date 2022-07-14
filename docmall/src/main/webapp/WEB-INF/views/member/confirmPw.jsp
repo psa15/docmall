@@ -37,13 +37,8 @@
     </style>
 
    	<script>
-   		let msg = "${msg}";
-   		
-   		if(msg == "wrongId") {
-   			alert("아이디를 확인하세요.");
-   		}else if (msg == "wrongPassword") {
-   			//else만 적어도 되는데 정확히 어떤 경우인지 확인하기 위해 else if 사용
-   			
+   	
+   		if ('${msg}' == "noPw") {   			
    			alert("비밀번호를 확인하세요.");
    		}
    	</script>
@@ -54,15 +49,15 @@
 	<!-- header -->
 	<%@include file="/WEB-INF/views/include/header.jsp" %>
 	
-	<h3>로그인</h3>
+	<h3>비밀번호 확인</h3>
 	
 	<div class="container">
 	  <div class=" mb-3 text-center">
-	    <form id="loginForm" method="post" action="loginPost">
+	    <form id="confirmPwForm" method="post" action="confirmPw">
 		  <div class="form-group row">
 		    <label for="m_userid" class="col-sm-4 col-form-label">아이디</label>
 		    <div class="col-sm-6">
-		      <input type="text" class="form-control" id="m_userid" name="m_userid">
+		      <input type="text" class="form-control" id="m_userid" name="m_userid" value="${sessionScope.loginStatus.m_userid}" readonly>
 		    </div>
 		   </div>		    
 		  <div class="form-group row">
@@ -73,12 +68,12 @@
 		  </div>		  
 		  <div class="form-group">
 		    <div class="text-center">
-				<button type="submit" class="btn btn-dark text-center" id="btnLogin">로그인</button>
+				<button type="submit" class="btn btn-dark text-center" id="btnconfirmPw">확인</button>
 		    </div>
 		  </div>
 		  <div class="form-group">
 			<div class="text-center">
-				<button type="button" class="btn btn-dark" id="btnSearchIDPW">아이디 및 비밀번호 찾기</button>
+				<button type="button" class="btn btn-dark" id="btnCancel">취소</button>
 		    </div>
 		  </div>
 	      
@@ -105,41 +100,11 @@
 		//<form> 태그의 이벤트 설정
 		$(document).ready(function(){
 
-			let loginForm = $("#loginForm");
+			let confirmPwForm = $("#confirmPwForm");
 
-			/*
-			로그인 정보 전송 톰캣		<button type="submit" id="btnLogin">
-			버튼으로 접근해서 .on("click", function(){}
-			$("#btnLogin").on("click", function(){
-				console.log("login");
-
-				//유효성 검사
-				if($("#m_userid").val() == "") {
-					alert("아이디를 입력하세요");
-					$("#m_userid").focus();
-					return false; 
-				}
-				if($("#m_passwd").val() == "") {
-					alert("비밀번호를 입력하세요");
-					$("#m_passwd").focus();
-					return false; 
-				}
-
-				return true; // 전송 X 
-
-			});
-			*/
+			
 			//form태그로 접근해서 .on("submit", function(){}
-			$("#loginForm").on("submit", function(){
-
-				console.log("로그인 진행");
-
-				//유효성 검사작업 해야 함.
-				if($("#mem_id").val() == ""){
-					alert("아이디를 입력하세요.");
-					$("#mem_id").focus();
-					return false;
-				}
+			$("#confirmPwForm").on("submit", function(){
 
 				if($("#mem_pw").val() == ""){
 					alert("비밀번호를 입력하세요.");
@@ -149,14 +114,10 @@
 
 				return true;
 			});
-
-			//아이디 및 비밀번호 찾기
-			$("#btnSearchIDPW").on("click", function(){
-
-				location.href = "/member/lostIDPw";
-			});
-
 			
+		 $("#btnconfirmPw").on("click", function(){
+			 confirmPwForm.submit();
+		 });
 		});
 	</script>
     

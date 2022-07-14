@@ -1,5 +1,7 @@
 package com.docmall.service;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.docmall.domain.MemberVO;
 import com.docmall.dto.LoginDTO;
 
@@ -15,4 +17,16 @@ public interface MemberService {
 	
 	//로그인 정보 인증작업
 	MemberVO login_ok(LoginDTO dto);
+	
+	//아이디 찾기
+	String searchID(String m_username, String m_email);
+	
+	//임시 비밀번호 발급하기 전 사용자가 입력한 데이터가 존재하는지 확인하기
+	String getIdEmailExists(String m_userid, String m_email);
+	
+	//임시비밀번호를 암호화하여 변경
+	void changePw(String m_userid, String enc_m_passwd);
+
+	//회원정보 수정
+	void modify(MemberVO vo);
 }

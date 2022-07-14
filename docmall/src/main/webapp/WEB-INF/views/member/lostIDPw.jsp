@@ -36,7 +36,13 @@
       }
     </style>
 
-   
+	<!--아이디 찾기 - 결과가 없을 때 -->
+   <script>
+		if('${msg}' == 'noData') {
+			alert("입력한 정보를 확인해 주세요. \n 일치하는 회원 정보가 없습니다.");
+			
+		}
+	</script>
     
   </head>
   <body>
@@ -44,61 +50,63 @@
 	<!-- header -->
 	<%@include file="/WEB-INF/views/include/header.jsp" %>
 	
-	<h3>		아이디 및 비밀번호 찾기</h3>
+	<h3>아이디 및 비밀번호 찾기</h3><br><br>
 	
 	<div class="container">
 	  <div class=" mb-3 text-center">
 	  	<div class="row">
 	  		<!-- 아이디 찾기 -->
 	  		<div class="col-6">
-	  			<form id="loginForm" method="post" action="loginPost">
+	  			<h5>아이디 찾기</h5>
+	  			<form id="idSearchForm" method="post" action="searchId">
 				  <div class="form-group row">
-				    <label for="m_userid" class="col-sm-4 col-form-label">아이디</label>
-				    <div class="col-sm-6">
-				      <input type="text" class="form-control" id="m_userid" name="m_userid">
+				    <label for="m_username" class="col-sm-4 col-form-label">이름</label>
+				    <div class="col-sm-8">
+				      <input type="text" class="form-control" id="m_username" name="m_username" placeholder="이름">
 				    </div>
 				   </div>		    
 				  <div class="form-group row">
-				    <label for="m_passwd" class="col-sm-4 col-form-label">비밀번호</label>
-				    <div class="col-sm-6">
-				      <input type="password" class="form-control" id="m_passwd" name="m_passwd">
+				    <label for="m_email" class="col-sm-4 col-form-label">이메일</label>
+				    <div class="col-sm-8">
+				      <input type="text" class="form-control" name="m_email" placeholder="이메일">
 				    </div>
 				  </div>		  
 				  <div class="form-group">
 				    <div class="text-center">
-						<button type="submit" class="btn btn-dark text-center" id="btnLogin">아이디 찾기</button>
+						<button type="submit" class="btn btn-dark text-center" id="btnSearchID">아이디 찾기</button>
 				    </div>
 				  </div>
 				  <div class="form-group">
 					<div class="text-center">
-						<button type="button" class="btn btn-dark" id="btnSearchIDPW">로그인</button>
+						<button type="button" class="btn btn-dark btnLogin">로그인</button>
 				    </div>
 				  </div>
 				</form>
 	  		</div>
 	  		<!-- 임시 비밀번호 발급 -->
 	  		<div class="col-6">
-	  			<form id="loginForm" method="post" action="loginPost">
+	  			<h5>임시 비밀번호 발급</h5>
+	  			<form id="pwSearchForm" method="post" action="sendNewPw">
 				  <div class="form-group row">
 				    <label for="m_userid" class="col-sm-4 col-form-label">아이디</label>
-				    <div class="col-sm-6">
-				      <input type="text" class="form-control" id="m_userid" name="m_userid">
+				    <div class="col-sm-8">
+				      <input type="text" class="form-control" id="m_userid" name="m_userid" placeholder="아이디">
 				    </div>
 				   </div>		    
 				  <div class="form-group row">
-				    <label for="m_passwd" class="col-sm-4 col-form-label">비밀번호</label>
-				    <div class="col-sm-6">
-				      <input type="password" class="form-control" id="m_passwd" name="m_passwd">
+				    <label for="m_email" class="col-sm-4 col-form-label">이메일</label>
+				    <div class="col-sm-8">
+				      <input type="text" class="form-control" name="m_email" placeholder="이메일">
 				    </div>
 				  </div>		  
 				  <div class="form-group">
 				    <div class="text-center">
-						<button type="submit" class="btn btn-dark text-center" id="btnLogin">임시 비밀번호 발급</button>
+						<button type="submit" class="btn btn-dark text-center" id="btnNewPw">임시 비밀번호 발급</button>
 				    </div>
 				  </div>
 				  <div class="form-group">
 					<div class="text-center">
-						<button type="button" class="btn btn-dark" id="btnSearchIDPW">로그인</button>
+						<button type="button" class="btn btn-dark btnLogin">로그인</button>
 				    </div>
 				  </div>
 				</form>
@@ -176,6 +184,11 @@
 						}
 					}
 				});
+			});
+
+			//로그인 화면으로 이동
+			$(".btnLogin").on("click", function(){
+				location.href = "/member/login";
 			});
 		});
 	</script>

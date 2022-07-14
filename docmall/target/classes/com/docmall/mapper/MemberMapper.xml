@@ -36,4 +36,53 @@
 		
 	</select>
 	
+	<!-- 아이디 찾기 -->
+	<select id="searchID" resultType="String">
+		
+		SELECT M_USERID
+		FROM TBL_MEMBER
+		WHERE M_USERNAME = #{m_username} AND M_EMAIL = #{m_email}
+		
+	</select>
+	
+	<!-- 임시 비밀번호 발급 전 아이디와 메일 존재 유무 확인 -->
+	<select id="getIdEmailExists" resultType="String">
+		
+		SELECT M_USERID
+		FROM TBL_MEMBER
+		WHERE M_USERID = #{m_userid} AND M_EMAIL = #{m_email}
+		
+	</select>
+	
+	<!-- 임시비밀번호를 암호화하여 update -->
+	<update id="changePw">
+	
+		UPDATE TBL_MEMBER
+		SET M_PASSWD = #{m_passwd}
+		WHERE M_USERID = #{m_userid}
+	
+	</update>
+	
+	<!-- 회원정보 수정 -->
+	<update id="modify">
+		
+		UPDATE 
+			TBL_MEMBER
+		SET 
+			<if test="m_passwd != null">
+				M_PASSWD = #{m_passwd},
+			</if>
+			M_USERNAME = #{m_username},
+			M_NICKNAME = #{m_nickname},
+			M_POSTNUM = #{m_postnum},
+			M_ADDR = #{m_addr},
+			M_ADDR_D = #{m_addr_d},
+			M_TEL = #{m_tel},
+			M_EMAIL = #{m_email},
+			M_EMAIL_ACCEPT = #{m_email_accept}
+			
+		WHERE 
+			M_USERID = #{m_userid}
+			
+	</update>
 </mapper>
