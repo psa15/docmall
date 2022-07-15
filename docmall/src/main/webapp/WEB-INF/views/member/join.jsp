@@ -63,6 +63,7 @@
 		    <label for="m_passwd" class="col-sm-2 col-form-label">비밀번호</label>
 		    <div class="col-sm-10">
 		      <input type="password" class="form-control" id="m_passwd" name="m_passwd">
+		      <div class="m_passwd regex"></div>
 		    </div>
 		  </div>
 		  <div class="form-group row">
@@ -178,6 +179,7 @@
 					return;
 				}*/
 
+				 
 				//제출
 				joinForm.submit();
 			});

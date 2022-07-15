@@ -48,7 +48,7 @@
 	
 	<div class="container">
 	  <div class=" mb-3 text-center">
-	    <form id="modifyForm" method="post" action="join">
+	    <form id="modifyForm" method="post" action="modify">
 		  <div class="form-group row">
 		    <label for="m_userid" class="col-sm-2 col-form-label">아이디</label>
 		    <div class="col-sm-5">

@@ -336,15 +336,27 @@ public class MemberController {
 	@PostMapping("/modify")
 	public String modify(MemberVO vo, RedirectAttributes rttr) {
 		
+		log.info("회원 수정 정보 : " + vo);
+		
+		//클라이언트에서 입력한 정보의 파라미터켱이 MemberVO클래스의 필드명과 일치하지 않으면, 필드가 참조타입일 경우에는 null이 된다. -> 예외발생
+		//예-파라미터가 일치하지 않은 경우) 비밀번호 : 클라이언트에서 m_pw100(공백) + 서버(스프링) MemberVO클래스의 필드 : m_pw -> m_pw=null 이 됨
+		//예-파라미터가 일치하는 경우) 클라이언트에서 값을 입력하지 않으면 서버(스프링)에서 m_pw = "" 으로 처리.
+		
+		if(vo.getM_passwd().equalsIgnoreCase("")) log.info("공백 문자열");
+		//만약 getM_passwd가 null로 들어오면 여기서 예외발생하게 됨
+		
+		//비밀번호 암호화
+		if(vo.getM_passwd() != null && !vo.getM_passwd().equals("")) {
+			log.info("변경 비밀번호: " + vo.getM_passwd());
+			String cryptEncoderPw = bCryptPasswordEncoder.encode(vo.getM_passwd());
+			vo.setM_passwd(cryptEncoderPw);
+		}
+		
 		//메일 수신 여부
 		if(vo.getM_email_accept().equals("on")) {
 			vo.setM_email_accept("Y");
-		}
-		
-		//비밀번호 암호화
-		if(vo.getM_passwd() != null) {
-			String cryptEncoderPw = bCryptPasswordEncoder.encode(vo.getM_passwd());
-			vo.setM_passwd(cryptEncoderPw);
+		} else {
+			vo.setM_email_accept("N");
 		}
 		
 		memService.modify(vo);

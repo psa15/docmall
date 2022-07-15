@@ -69,7 +69,7 @@
 		UPDATE 
 			TBL_MEMBER
 		SET 
-			<if test="m_passwd != null">
+			<if test="m_passwd != null and !m_passwd.equals('')">
 				M_PASSWD = #{m_passwd},
 			</if>
 			M_USERNAME = #{m_username},
