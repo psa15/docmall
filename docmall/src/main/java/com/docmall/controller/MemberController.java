@@ -295,16 +295,17 @@ public class MemberController {
 		MemberVO vo = memService.login_ok(dto);
 		
 		String url = "";
-		
-		if(vo != null) {
-			//비밀번호가 일치 -> 회원정보 수정
-			url = "/member/modify";
+		String db_passwd = vo.getM_passwd(); //db에서 가져온 비밀번호(암호화 처리 전임)
 			
-		}else {
-			//비밀번호가 다름
-			url = "/member/confirmPw";
-			rttr.addFlashAttribute("msg", "noPw");
-		}
+		if(bCryptPasswordEncoder.matches(m_passwd, db_passwd)) {			
+				//비밀번호가 일치 -> 회원정보 수정
+				url = "/member/modify";
+				
+			}else {
+				//비밀번호가 다름
+				url = "/member/confirmPw";
+				rttr.addFlashAttribute("msg", "noPw");
+			}
 		
 		return "redirect:" + url;
 	}
