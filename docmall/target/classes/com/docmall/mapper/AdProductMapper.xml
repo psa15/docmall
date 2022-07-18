@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.mapper.AdProductMapper">
+
+	<!-- 1차 카테고리 정보 -->
+	<select id="getCateList" resultType="com.docmall.domain.CategoryVO">
+		
+		SELECT
+			CT_CODE, CT_P_CODE, CT_NAME
+		FROM
+			TBL_CATEGORY
+		WHERE
+			CT_P_CODE IS NULL
+			
+	</select>
+	
+	<!-- 2차 카테고리 정보 -->
+	<select id="getSubCateList" parameterType="int" resultType="com.docmall.domain.CategoryVO">
+		
+		SELECT
+			CT_CODE, CT_P_CODE, CT_NAME
+		FROM
+			TBL_CATEGORY
+		WHERE
+			CT_P_CODE =#{categoryCode}
+			
+	</select>
+	
+	
+</mapper>

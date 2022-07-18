@@ -11,7 +11,7 @@
   
   <%@include file="/WEB-INF/views/admin/include/plugin1.jsp" %>
   
-  <link rel="stylesheet" href="/resources/css/adLogin.css">
+  <link rel="stylesheet" href="/css/adLogin.css">
 
   <script>
   	//rttr.addFlashAttribute("msg", msg); 이렇게 코드를 작성했기 때문에 선언 필요
