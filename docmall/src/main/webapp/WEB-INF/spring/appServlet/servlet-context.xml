@@ -23,7 +23,10 @@
 	<resources mapping="/css/**" location="/resources/css/" />
 	
 	<resources mapping="/ckeditor/**" location="/resources/bower_components/ckeditor/" />
+	<!--
+	프로젝트 내부폴더를 업로드 할 경우, 경로를 짧게 사용하기 위하여 설정
 	<resources mapping="/upload/**" location="/resources/upload/" />
+	-->
 
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">

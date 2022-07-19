@@ -19,13 +19,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.docmall.domain.CategoryVO;
+import com.docmall.domain.ProductVO;
 import com.docmall.service.AdProductService;
+import com.docmall.util.UploadFileUtils;
 
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -61,57 +63,73 @@ public class AdProductController {
 		return entity;
 	}
 	
-	//ckeditor 웹에디터를 통한 이미지 업로드 작업 (상세설명에 사용하는 설명 이미지파일)
-	@PostMapping("/imageUpload")
+	//CKEditor 웹에디터를 통한 이미지 업로드 작업(상세설명에서 사용하는 설명이미지파일)
+	@PostMapping("/imageUpload")  // CKEditor: 업로드 <input type="file" name="upload">
 	public void imageUpload(HttpServletRequest req, HttpServletResponse res, MultipartFile upload) {
-		//MultipartFile upload - CKEditor : 업로드<input type="file" name="upload"> 로 name을 일치시킨 것
-		//업로드 되는 파일 정보가 넘어온
+		/*
+		 HttpServletRequest req, HttpServletResponse res
+		 - Request : 클라이언트가 서버에 접속하는 작업형태
+		 - Response : 서버에서 클라이언트에게 결과를 보낼 때 담당
+		 */
+		
+		//입출력 스트림 방식으로 파일 업로드
 		
 		OutputStream out = null;
-		PrintWriter printWriter = null;
+		PrintWriter printWriter = null; //개체의 형식화된 표현을 텍스트 출력 스트림에 출력하는 기능을 제공
+		//response 객체에서 받아옴 - 아래 printWriter = res.getWriter(); 코드
 		
-		//클라이언트의 브라우저에게 보내는 정보
+		//클라이언의 브라우저에게 보내는 정보.
 		res.setCharacterEncoding("utf-8");
 		res.setContentType("text/html; charset=utf-8");
 		
 		try {
-			String fileName = upload.getOriginalFilename(); //클라이언트에서 업로드한 원본의 파일 명
-			byte[] bytes = upload.getBytes(); //업로드 파일
+			String fileName = upload.getOriginalFilename(); // 클라이언트에서 업로드한 원본파일명.
+			byte[] bytes = upload.getBytes(); // 업로드 파일
 			
-			//서버측의 업로드 폴더경로 작업, 1) 프로젝트 내부 or 2)외부
-			//1) 프로젝트 내부 :포리젝트 내부 : 톰캣이 war 파일로 리눅스 서버에 배포를 할 경우, 톰캣을 재 시작하며 기존 upload 폴더를 삭지
-				
-			//String uploadPath = req.getSession().getServletContext().getRealPath("/") + "resources\\upload\\"; 
-			//내부 폴더 경로 - 톰캣이 실제 관리하는 물리적인 경로 (resources의 upload는 중간 가상경로)
+			//서버측의 업로드폴더경로 작업. 1)프로젝트 내부  2)외부
+			//1)프로젝트 내부 : 톰캣이 war 파일로 리눅스서버에 배포를 할 경우, 톰캣이 재시작하면, 기존 upload폴더를 삭제해버린다. 
+			// 톰캣이 실제관리하는 물리적인 경로		
+			String uploadTomcatTempPath = req.getSession().getServletContext().getRealPath("/") + "resources\\upload\\";
+			log.info("톰캣 물리적 경로: " + uploadTomcatTempPath);
 			
-			//2)외부 폴더
-			String uploadPath ="C:\\Dev\\upload\\ckeditor\\";
+			//2)외부폴더(프로젝트 관리하는 폴더가 아님)
+			//작업시 톰캣의 server.xml의 <Context docBase="C:\\Dev\\upload\\ckeditor" path="/upload/" reloadable="true"/>설정 할것.
+			String uploadPath = "C:\\Dev\\upload\\ckeditor\\";
+			//server.xml의 새로 추가한 경로를 참조해야 하기 때문에 docBase속성의 값과 같아야 함
+			
 			log.info("외부 물리적 경로: " + uploadPath);
 			
 			uploadPath = uploadPath + fileName;
 			
-			out = new FileOutputStream(new File(uploadPath)); //파일 입출력 스트림 객체 생성(폴더에 파일명 소개 - 0byte)
+			log.info("외부 물리적 경로 파일 이름: " + uploadPath);
 			
-			out.write(bytes); //출력스트림의 업로드된 파일을 가리키는 바이트 배열을 쓴다 - 업로드한 파일 크기
+			out = new FileOutputStream(new File(uploadPath)); // 파일입출력스트림 객체생성(실제폴더에 파일생성됨). 0byte
+			//위까지는 빈 파일
 			
-			//ckeditor 에게 보낼 파일 정보 작업
+			out.write(bytes); // 출력스트림에 업로드된 파일을 가리키는 바이트배열을 쓴다.  업로드된 파일크기.
+			//빈 파일에 내용을 붓는 작업
+			
+			// CKEditor에게 보낼 파일정보작업 - CKEditor에서 피요로 하는 코드	
 			printWriter = res.getWriter();
 			
-			//클라이언에서 요청할 이미ㅣㅈ 주소 정보
+			//클라이언트에서 요청할 이미지 주소정보
 			String fileUrl = "/upload/" + fileName;
+			//"/upload/" : server.xml의 path속성의 매핑주소
 			
-			// {"filename":"abc.gif", "uploaded":1, "url":"/upload/abc.gif"} CKEditor 4.x  version에서 요구하는  json포맷
+			log.info("클라이언트에서 요청할 이미지 주소 정보: " + fileUrl);
+			
+			// {"filename":"abc.gif", "uploaded":1, "url":"/upload/abc.gif"} CKEditor 4.x version에서 요구하는 json포맷
 			printWriter.println("{\"filename\":\"" + fileName + "\", \"uploaded\":1,\"url\":\"" + fileUrl + "\"}");
 			printWriter.flush(); // 전송 (return과 같은 역할: 클라이언트로 보냄)
-
 			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
+		
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}finally {
 			if(out != null) {
 				try {
 					out.close();
-				} catch(IOException e) {
+				}catch(IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -122,6 +140,23 @@ public class AdProductController {
 		
 	}
 	
-	
 	//상품 저장
+	@PostMapping("/productInsert")
+	public String productInsert(ProductVO vo, RedirectAttributes rttr) {
+		
+		log.info("상품 등록 정보: " + vo);
+		
+		//파일 업로드 작업
+//		vo.getP_image(); //현재 null 상태(상품 이미지의 input태그에 name 값을 변경함) 
+		//이미지 파일명이 저장될 p_image필드에 업로드한 후 실제 파일명을 저장
+		String uploadDateFolderPath = UploadFileUtils.getFolder();
+		vo.setP_image_dateFolder(uploadDateFolderPath);//날짜 폴더명
+		vo.setP_image(UploadFileUtils.uploadFile(uploadPath, uploadDateFolderPath, vo.getUploadFile()));//-> 실제 이미지 명 할당
+		//uploadFolder : 에러남 -> @Resource로 주입한 bean객체 이름을 작성
+		
+		//상품 정보 저장
+		adPService.productInsert(vo);
+		
+		return "redirect:/#";
+	}
 }

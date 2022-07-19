@@ -66,12 +66,13 @@ desired effect
 
       <div class="row">
       	<div class="col-md-12">
+      	<form id="productForm" method="post" action="productInsert" enctype="multipart/form-data">
       		<div class="box box-primary">
       			<div class="box-header">
       				REGISTER PRODUCT
       			</div>
       			<div class="box-body">
-      				<form id="productForm" method="post" action="">
+      				
 					  <div class="form-group row">
 					  	<label for="category" class="col-sm-2 col-form-label">카테고리</label>					  
 					    <div class="col-sm-10">
@@ -109,7 +110,7 @@ desired effect
 					  <div class="form-group row">
 					    <label for="p_image" class="col-sm-2 col-form-label">상품 이미지</label>
 					    <div class="col-sm-10">
-					      <input type="password" class="form-control" id="p_image" name="p_image">					     
+					      <input type="file" class="form-control" id="uploadFile" name="uploadFile">					     
 					    </div>
 					  </div>
 					  <div class="form-group row">  				  
@@ -131,7 +132,7 @@ desired effect
 					      </select>					     
 					    </div>
 					  </div>			      				      		
-					</form>
+					
       			</div>
       			<div class="box-footer">
       				<div class="form-group">
@@ -139,11 +140,12 @@ desired effect
       				</div>
       				<div class="form-group row">
       					<div class="col-md-12">
-      						<button type="button" class="btn btn-dark text-center" id="btnProduct">상품등록</button>
+      						<button type="submit" class="btn btn-dark text-center" id="btnProduct">상품등록</button>
       					</div>
       				</div>
-      			</div>
+      			</div>      			
       		</div>
+      	</form>
       	</div>      
       </div>
 
@@ -284,7 +286,6 @@ desired effect
         for(let i=0; i<subCategoryList.length; i++) {
           optionStr += "<option value ='" + subCategoryList[i].ct_code + "'>" + subCategoryList[i].ct_name + "</option>";
         }
-
         secondCategory.append(optionStr);
       });
     });
