@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <!--
 This is a starter template page. Use this page to start your new project from
@@ -65,87 +66,113 @@ desired effect
     <section class="content container-fluid">
 
       <div class="row">
-      	<div class="col-md-12">
-      	<form id="productForm" method="post" action="productInsert" enctype="multipart/form-data">
+      	<div class="col-md-12">      	
       		<div class="box box-primary">
       			<div class="box-header">
-      				REGISTER PRODUCT
-      			</div>
+      				LIST PRODUCT     
+      			</div>	
       			<div class="box-body">
-      				
-					  <div class="form-group row">
-					  	<label for="category" class="col-sm-2 col-form-label">카테고리</label>					  
-					    <div class="col-sm-10">
-					      <select id="first_ct_code" name="f_ct_code">
-					      	<option value="">1차 카테고리 선택 </option>
-					      	<c:forEach items="${firstCateList}" var="cateList">
-					      		<option value="${cateList.ct_code}">${cateList.ct_name}</option>					      	
-					      	</c:forEach>
-					      </select>
-					      <select id="second_ct_code" name="s_ct_code">
-					      	<option  value="">2차 카테고리 선택 </option>
-					      </select>
-					    </div>					    
-					  </div>
-					  <div class="form-group row">
-					    <label for="p_name" class="col-sm-2 col-form-label">상품명</label>
-					    <div class="col-sm-4">
-					      <input type="text" class="form-control" id="p_name" name="p_name">					     
-					    </div>
-					    <label for="p_cost" class="col-sm-2 col-form-label">상품가격</label>
-					    <div class="col-sm-4">
-					      <input type="text" class="form-control" id="p_cost" name="p_cost">					     
-					    </div>
-					  </div>
-					  <div class="form-group row">
-					    <label for="p_discount" class="col-sm-2 col-form-label">할인율</label>
-					    <div class="col-sm-4">
-					      <input type="text" class="form-control" id="p_discount" name="p_discount">					     
-					    </div>
-					    <label for="p_company" class="col-sm-2 col-form-label">제조사</label>
-					    <div class="col-sm-4">
-					      <input type="text" class="form-control" id="p_company" name="p_company">					     
-					    </div>
-					  </div>
-					  <div class="form-group row">
-					    <label for="p_image" class="col-sm-2 col-form-label">상품 이미지</label>
-					    <div class="col-sm-10">
-					      <input type="file" class="form-control" id="uploadFile" name="uploadFile" multiple="multiple">					     
-					    </div>
-					  </div>
-					  <div class="form-group row">  				  
-					    <label for="p_detail" class="col-sm-2 col-form-label">상품 설명</label>
-					    <div class="col-sm-10">
-					      <textarea class="form-control" id="p_detail" name="p_detail" rows="3"></textarea>					     
-					    </div>
-					  </div>
-					  <div class="form-group row">
-					    <label for="p_amount" class="col-sm-2 col-form-label">수량</label>
-					    <div class="col-sm-4">
-					      <input type="text" class="form-control" id="p_amount" name="p_amount">					     
-					    </div>
-					    <label for="p_buy_ok" class="col-sm-2 col-form-label">판매여부</label>
-					    <div class="col-sm-4">
-					      <select id="p_buy_ok" name="p_buy_ok">
-					      	<option value="Y">판매가능</option>
-					      	<option value="N">판매불가</option>
-					      </select>					     
-					    </div>
-					  </div>			      				      		
+      				<form id="searchForm" action="/admin/product/productList" method="get">
+					  <%-- 검색 단추를 누르면  --%>
+					    <select name="type">
+							 <option value="" <c:out value="${pageMaker.cri.type == null ? 'selected' : ''}" />>--</option> 
+							 <option value="N" <c:out value="${pageMaker.cri.type eq 'N' ? 'selected' : ''}" />>상품명</option>
+							 <option value="C" <c:out value="${pageMaker.cri.type eq 'C' ? 'selected' : ''}" />>제조사</option>
+							 <option value="NC" <c:out value="${pageMaker.cri.type eq 'NC' ? 'selected' : ''}" />>상품명  or 제조사</option>
+					  	</select>
+					  	<input type="text" name="keyword" value="${pageMaker.cri.keyword}">
+					  	<input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
+					  	<input type="hidden" name="amount" value="${pageMaker.cri.amount}">
+					  	<button class="btn btn-info">Search</button>
+					  </form>
 					
-      			</div>
-      			<div class="box-footer">
-      				<div class="form-group">
-    					<ul class="uploadedList"></ul>
-      				</div>
-      				<div class="form-group row">
-      					<div class="col-md-12">
-      						<button type="submit" class="btn btn-dark text-center" id="btnProduct">상품등록</button>
-      					</div>
-      				</div>
-      			</div>      			
-      		</div>
-      	</form>
+					
+					  <table class="table table-hover">
+						  <thead>
+						    <tr>
+						      <th scope="col">번호</th>
+						      <th scope="col">상품명</th>
+						      <th scope="col">가격</th>
+						      <th scope="col">등록일</th>
+						      <th scope="col">판매여부</th>
+						      <th scope="col">수정</th>
+						      <th scope="col">삭제</th>
+						    </tr>
+						  </thead>
+						  <tbody>
+						  <c:forEach items="${productList}" var="productVO">
+						    <tr>
+						    <!-- BoardVO클래스의 필드명으로 코딩했지만, 호출은 getter메소드가 사용됨 -->
+						    <%-- html 주석인 <!-- -->를 사용할 때 서버관련 코드는 작성 불가 
+						    	 ${} : html주석은 서버에서도 보이기 때문에 jsp주석인 여기 안에 설명을 달아야 한다.--%>
+						      <!-- 번호 -->
+						      <td scope="row"><c:out value="${productVO.p_num}" /></td>	
+						      <!-- 이미지 및 상품이름 -->				      
+						      <td>
+						      	<img src="/admin/product/displayFile?folderName=${productVO.p_image_dateFolder}&fileName=${productVO.p_image}" alt="이미지준비">
+						      	<a class="move" href="${productVO.p_num}"><c:out value="${productVO.p_name}" /></a>
+						      </td>							  
+						      <!-- 가격 -->
+						      <td><c:out value="${productVO.p_cost}" /></td>
+						      <!-- 등록일 -->
+						      <td><fmt:formatDate value="${productVO.p_regdate}" pattern="yyyy-MM-dd hh:mm:ss"/></td>
+						      <!-- 판매여부 -->
+						      <td><c:out value="${productVO.p_buy_ok}" /></td>
+						      <!-- 수정 -->
+						      <td>수정</td>
+						      <!-- 삭제 -->
+						      <td>삭제</td>
+						    </tr>
+						   </c:forEach> 
+						   
+						  </tbody>
+						</table>
+						<nav aria-label="...">
+						  <ul class="pagination justify-content-center">
+						  
+						  	<%-- 이전표시 --%>
+						  	<c:if test="${pageMaker.prev}">
+							    <li class="page-item">
+							      <a class="page-link" href="${pageMaker.startPage-1}">이전</a>
+							    </li>
+						    </c:if>
+						    
+						    <%-- 페이지 번호 표시 ( 1 2 3 4 5) --%>
+						    <c:forEach begin="${pageMaker.startPage}" end="${pageMaker.endPage}" var="num">
+						    	<li class='page-item ${pageMaker.cri.pageNum == num ? "active" : ""}'><a class="page-link" href="${num}">${num}</a></li>
+						    </c:forEach>
+						    <%--
+						    	${pageMaker.cri.pageNum == num ? "active" : ""}
+					    	 	 - 현재 페이지와 num이 같으면 활성화(파랗게 칠해지는 거)
+					    	 	 - active가 현재페이지 파랗게 보여주는 키워드임 
+						     --%>
+						     
+						    <%-- 
+						    <li class="page-item active" aria-current="page">
+						      <span class="page-link">2</span>
+						    </li>
+						    <li class="page-item"><a class="page-link" href="#">3</a></li>
+						    --%>
+						    
+						    <%-- 다음표시 --%>
+						    <c:if test="${pageMaker.next}">
+							    <li class="page-item">
+							      <a class="page-link" href="${pageMaker.endPage +1}">다음</a>
+							    </li>
+						    </c:if>   
+						  </ul>
+						  
+						  <form id="actionForm" action="/board/list" method="get">
+								<%-- 페이지 번호 클릭시 list주소로 보낼 파라미터 작업 - model 덕분에 ${pageMaker.cri.___} 사용 가능 --%>
+								<input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
+								<input type="hidden" name="amount" value="${pageMaker.cri.amount}">
+								<input type="hidden" name="type" value="${pageMaker.cri.type}">
+								<input type="hidden" name="keyword" value="${pageMaker.cri.keyword}">
+								<%-- 한 번 검색하면 list()메소드에 Criteria cri 에 값이 들어가게 되어 위 사용 가능 --%>
+							</form>
+						</nav>
+      			</div>		
+      		</div>     
       	</div>      
       </div>
 
@@ -240,58 +267,6 @@ desired effect
 
 <!-- jQuery 3, Bootstrap 3.3.7, AdminLTE App -->
 <%@include file="/WEB-INF/views/admin/include/plugin2.jsp" %>
-
-<!-- ckeditor -->
-<script type="text/javascript" src="/ckeditor/ckeditor.js"></script>
-<script>
-
-  $(document).ready(function(){
-
-    //ckeditor 환경 설정
-    var ckeditor_config = {
-			resize_enabled : false,
-			enterMode : CKEDITOR.ENTER_BR,
-			shiftEnterMode : CKEDITOR.ENTER_P,
-			toolbarCanCollapse : true,
-			removePlugins : "elementspath", 
-			filebrowserUploadUrl: '/admin/product/imageUpload' //업로드 탭기능추가 속성
-    }
-
-    CKEDITOR.replace("p_detail", ckeditor_config);
-
-    //1차 카테고리 선택
-    $("#first_ct_code").on("change", function(){
-
-      let firstCategoryCode = $(this).val();
-
-      console.log("1차 카테고리 코드: " + firstCategoryCode);
-
-      let url = "/admin/product/subCategoryList/" + firstCategoryCode;
-
-      //json으로 요청하기 때문에
-      $.getJSON(url, function(subCategoryList){
-        //subCategoryList가 넘어 오는 것 (postman의 결과)
-
-/*         console.log("첫 번째 데이터 코드: " + subCategoryList[0].ct_code);
-        console.log("첫 번째 데이터 부모 코드: " + subCategoryList[0].ct_p_code);
-        console.log("첫 번째 데이터 이름: " + subCategoryList[0].ct_name); */
-
-        //2차 카테고리 태그 참조 (핸들바 사용도 가능)
-        let secondCategory = $("#second_ct_code");
-        let optionStr = "";
-
-        secondCategory.find("option").remove(); //기존 카테고리에 의하여 출력되는 요소를 제거
-        secondCategory.append("<option value=''>2차 카테고리 선택</option>");
-
-        for(let i=0; i<subCategoryList.length; i++) {
-          optionStr += "<option value ='" + subCategoryList[i].ct_code + "'>" + subCategoryList[i].ct_name + "</option>";
-        }
-        secondCategory.append(optionStr);
-      });
-    });
-  });
-
-</script>
 
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
      Both of these plugins are recommended to enhance the

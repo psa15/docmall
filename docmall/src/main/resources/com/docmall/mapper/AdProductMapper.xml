@@ -38,4 +38,67 @@
 	
 	</insert>
 	
+	<!-- 검색 조건 쿼리 -->
+	<sql id="criteria">
+		<trim prefix="(" suffix=") AND " prefixOverrides="OR"><!-- serffix 공백 주의 -->
+			<foreach collection="typeArr" item="type">
+			 <!-- jstl문법의 foreach와는 다름, 이건 mybatis 문법 -->
+			 <!-- 6개 type에 따라 상황이 달라지기 때문에 이렇게 복잡해짐 -->
+			 <!-- typeArr : 파라미터타입의 Criteria클래스의 getter메소드를 가리킴, 검색종류(타입)의 값을 참조 -->
+			 	<trim prefix="OR">
+			 		<choose>
+			 			<!-- T, C, W 제외 다른 type은 조합이기 때문에 when절은 3개만 -->
+			 			<when test="type == 'N'.toString()">
+			 				P_NAME LIKE '%' || #{keyword} || '%'
+			 			</when>
+			 			<when test="type == 'C'.toString()">
+			 				P_COMPANY LIKE '%' || #{keyword} || '%'
+			 			</when>
+			 		</choose>
+			 	</trim>
+			</foreach>		
+		</trim>
+	</sql>
+	
+	<!-- 상품목록 : 페이징 쿼리(인덱스 힌트 구문 사용) -->
+	<!-- 인라인 뷰에 언급된 컬럼만이 바깥 SELECT구문에 언급할 수 있음 -->
+	<select id="getProductList" parameterType="com.docmall.dto.Criteria" resultType="com.docmall.domain.ProductVO">
+		<![CDATA[
+		SELECT 
+			RN, P_NUM, F_CT_CODE, S_CT_CODE, P_NAME, P_COST, P_DISCOUNT, 
+			P_COMPANY, P_IMAGE, P_IMAGE_DATEFOLDER,  P_AMOUNT,
+			P_BUY_OK, P_REGDATE, P_UPDATEDATE, P_DETAIL
+		FROM(
+		    SELECT 
+		    	/*+ INDEX_DESC(tbl_board PK_BOARD) */ 
+		    	ROWNUM RN,  P_NUM, F_CT_CODE, S_CT_CODE, P_NAME, P_COST, P_DISCOUNT, 
+		    	P_COMPANY, P_IMAGE, P_IMAGE_DATEFOLDER, P_AMOUNT,
+                P_BUY_OK, P_REGDATE, P_UPDATEDATE, P_DETAIL
+		    FROM 
+				TBL_PRODUCT
+		    WHERE
+		]]>
+				<include refid="criteria"></include>
+				<!-- <![CDATA[ ]]> 안에 들어가면 태그가 아닌 문자열로 읽게 됨 -->
+		<![CDATA[
+			 ROWNUM <= #{pageNum} * #{amount}
+		)
+		WHERE RN > (#{pageNum}-1) * #{amount}	
+		]]>
+		<!-- <를 문자로 보는 것이 아니라 시작태그 문자로 봐서 오류가 남 - 파싱 이라고 부름
+				어떤 문자든 신경쓰지말고 스킵하게 하는 XML문법이 이씀
+				CDATA 섹션 : <![CDATA[내용]]>  -->
+	</select>
+	
+	<!-- 상품 목록 개수 : 페이징 구현 사용 -->
+	<select id="getProductTotalCount" resultType="int" parameterType="com.docmall.dto.Criteria">
+		SELECT 
+			COUNT(*) 
+		FROM 
+			TBL_PRODUCT
+		WHERE
+			<include refid="criteria"></include>
+			P_NUM > 0		
+	</select>
+	
 </mapper>

@@ -46,6 +46,7 @@
 	<context:component-scan base-package="com.docmall.exception" />
 	
 	<!-- 파일 업로드 bean 설정, multipartResolver : 예약어 -->
-	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"></beans:bean>
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+	</beans:bean>
 			
 </beans:beans>

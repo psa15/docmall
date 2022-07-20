@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.docmall.domain.CategoryVO;
 import com.docmall.domain.ProductVO;
+import com.docmall.dto.Criteria;
+import com.docmall.dto.PageDTO;
 import com.docmall.service.AdProductService;
 import com.docmall.util.UploadFileUtils;
 
@@ -157,6 +160,44 @@ public class AdProductController {
 		//상품 정보 저장
 		adPService.productInsert(vo);
 		
-		return "redirect:/#";
+		return "redirect:/admin/product/productList";
+	}
+	
+	//상품목록 - 페이징 + 검색
+	@GetMapping("/productList")
+	public void productList(@ModelAttribute("cri") Criteria cri, Model model) {
+		//자동으로 cri 객체가 생성이 되는데 pageNum과 amount 에 각각 1과 10이 들어간 생성자가 호출
+		//Model model 상품 목록을 db에서 가져와 jsp에 제공해야 함
+		
+		log.info("검색 및 페이징 정보: " + cri);
+		
+		List<ProductVO> productList = adPService.getProductList(cri);
+		
+		//날짜폴더명의 \를 /로 변환하는 작업. \가 클라이언트에서 서버로 보내지는 데이터로 사용이 안됨
+		for(int i=0; i<productList.size();i++) {
+			String p_image_folder = productList.get(i).getP_image_dateFolder().replace("\\", "/");
+			productList.get(i).setP_image_dateFolder(p_image_folder);
+		}
+		log.info(productList.get(0).getP_image_dateFolder());
+	
+		//페이징 쿼리에 의한 상품 목록
+		model.addAttribute("productList", productList);
+		
+		//페이징
+		int totalCount = adPService.getProductTotalCount(cri);
+		model.addAttribute("pageMaker", new PageDTO(cri, totalCount));
+	}
+	
+	//상품 목록에서 이미지 보여주기
+	@ResponseBody
+	@GetMapping("/displayFile")
+	public ResponseEntity<byte[]> displayFile(String folderName, String fileName){
+		//String fileName : jsp 페이지에 뿌려진 날짜 폴더와 이미지 이름이 합쳐져서 들어올 예정
+		
+		log.info("폴더이름: " + folderName);
+		log.info("파일이름: " + fileName);
+		
+		//이미지를 byte[]로 읽어오는 작업 - UploadFileUtils		
+		return UploadFileUtils.getFile(uploadPath, folderName + "\\s_" + fileName);
 	}
 }

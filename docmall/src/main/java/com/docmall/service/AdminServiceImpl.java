@@ -15,10 +15,16 @@ public class AdminServiceImpl implements AdminService {
 	@Setter(onMethod_ = {@Autowired})
 	private AdminMapper adMapper;
 
-	////로그인
+	//로그인
 	@Override
 	public AdminVO login(AdminVO vo) {
 		return adMapper.login(vo);
+	}
+
+	////로그인 날짜 업데이트
+	@Override
+	public void updateLoginDate(AdminVO vo) {
+		adMapper.updateLoginDate(vo);
 	}	
 	/*
 	@Override

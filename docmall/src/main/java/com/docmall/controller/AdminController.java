@@ -115,6 +115,8 @@ public class AdminController {
 		
 		rttr.addFlashAttribute("msg", msg);
 		
+		adService.updateLoginDate(vo);
+		
 		return "redirect:" + url;
 	}
 	

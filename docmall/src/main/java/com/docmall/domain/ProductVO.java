@@ -30,5 +30,7 @@ public class ProductVO {
 	
 	//첨부된 상품 이미지 파일 자체를 받는 필드 추가
 	//<input type="file" class="form-control" id="uploadFile" name="uploadFile">
+	//<form id="productForm" method="post" action="productInsert" enctype="multipart/form-data">
+	//servlet-context.xml : <beans:bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"></beans:bean>
 	private MultipartFile uploadFile;
 }
