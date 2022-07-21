@@ -22,4 +22,10 @@ public interface AdProductService {
 	
 	//상품 목록 개수 : 페이징 구현 사용
 	int getProductTotalCount(Criteria cri);
+	
+	//상품 수정 시 선택된 상품의 상품코드에 맞는 정보 가져오기
+	ProductVO getProductByNum(Integer p_num);
+	
+	//상품 수정
+	void productModify(ProductVO vo);
 }

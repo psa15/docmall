@@ -101,4 +101,41 @@
 			P_NUM > 0		
 	</select>
 	
+	<!-- 상품 수정 시 선택된 상품의 상품코드에 맞는 정보 가져오기 -->
+	<select id="getProductByNum" resultType="com.docmall.domain.ProductVO">
+	
+		SELECT
+			P_NUM, F_CT_CODE, S_CT_CODE, P_NAME, P_COST, P_DISCOUNT, 
+			P_COMPANY, P_IMAGE, P_IMAGE_DATEFOLDER,  P_AMOUNT,
+			P_BUY_OK, P_REGDATE, P_UPDATEDATE, P_DETAIL
+		FROM 
+			TBL_PRODUCT
+		WHERE
+			P_NUM = #{p_num}
+	
+	</select>
+	
+	<!-- 상품 수정  -->
+	<update id="productModify">
+	
+		UPDATE
+			TBL_PRODUCT
+		SET
+			F_CT_CODE = #{f_ct_code}, 
+			S_CT_CODE = #{s_ct_code}, 
+			P_NAME = #{p_name}, 
+			P_COST = #{p_cost}, 
+			P_DISCOUNT = #{p_discount},						 
+			P_COMPANY = #{p_company}, 
+			P_AMOUNT = #{p_amount},
+			P_BUY_OK = #{p_buy_ok},
+			P_IMAGE = #{p_image}, 
+			P_IMAGE_DATEFOLDER = #{p_image_dateFolder}, 
+			P_DETAIL = #{p_detail}, 
+			P_UPDATEDATE = sysdate
+		WHERE 
+			P_NUM = #{p_num}
+	
+	</update>
+	
 </mapper>

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -173,12 +174,13 @@ public class AdProductController {
 		
 		List<ProductVO> productList = adPService.getProductList(cri);
 		
+		//윈도우 운영체제의 경로 구분자는 \를 사용
 		//날짜폴더명의 \를 /로 변환하는 작업. \가 클라이언트에서 서버로 보내지는 데이터로 사용이 안됨
 		for(int i=0; i<productList.size();i++) {
 			String p_image_folder = productList.get(i).getP_image_dateFolder().replace("\\", "/");
 			productList.get(i).setP_image_dateFolder(p_image_folder);
 		}
-		log.info(productList.get(0).getP_image_dateFolder());
+//		log.info(productList.get(0).getP_image_dateFolder());
 	
 		//페이징 쿼리에 의한 상품 목록
 		model.addAttribute("productList", productList);
@@ -199,5 +201,53 @@ public class AdProductController {
 		
 		//이미지를 byte[]로 읽어오는 작업 - UploadFileUtils		
 		return UploadFileUtils.getFile(uploadPath, folderName + "\\s_" + fileName);
+	}
+	
+	//상품수정 수정
+	@GetMapping("/productModify")
+	public void productModify(@RequestParam("p_num") Integer p_num, @ModelAttribute("cri") Criteria cri, Model model) {
+		//@ModelAttribute("cri") : Criteria cri의 정보를 상품 수정 폼에서 사용
+		
+		log.info("상품코드: " + p_num);
+		log.info("검색 및 페이징 정보: " + cri);
+		
+		//1차 카테고리 전부 가져오기 - 상품 등록 매핑주소에 있음
+		model.addAttribute("firstCateList", adPService.getCateList());
+		
+//		//수정할 상품 정보 가져오기
+//		model.addAttribute("productVO", adPService.getProductByNum(p_num));
+		
+		//상품 정보
+		ProductVO vo = adPService.getProductByNum(p_num);
+		model.addAttribute("productVO", vo);
+		
+		//상품정보에서 1차 카테고리 코드를 참조
+		Integer f_ct_code = vo.getF_ct_code();
+		//1차 카테고리를 부모로 하는 2차 카테고리 정보
+		model.addAttribute("secCateList", adPService.getSubCateList(f_ct_code));
+	}
+	//상품 수정 저장
+	@PostMapping("/productModify")
+	public String productModify(ProductVO vo, Criteria cri, RedirectAttributes rttr) {
+		log.info("상품 등록 정보: " + vo);
+		
+		//상품 이미지 변경  -> 파일 업로드 작업
+		if(!vo.getUploadFile().isEmpty()) {
+			
+			//현재 vo안에 처음 상품 등록시 사용한 이미지 파일이 있으니 먼저 삭제 - 날짜폴더명, 이미지파일명으로 작업
+			UploadFileUtils.deleteFile(uploadPath, vo.getP_image_dateFolder() + "\\s_" + vo.getP_image());
+			//db에 저장되어 있는 파일 이름이 원본이미지기 때문에 s_를 붙이기! \ 하나만 하면 X \\를 해야 \로 인식됨
+			
+			//변경된 이미지 업로드
+			String uploadDateFolderPath = UploadFileUtils.getFolder();
+			vo.setP_image_dateFolder(uploadDateFolderPath);//날짜 폴더명
+			vo.setP_image(UploadFileUtils.uploadFile(uploadPath, uploadDateFolderPath, vo.getUploadFile()));			
+			
+		} 		
+		
+		//상품 정보 수정
+		adPService.productModify(vo);
+		
+		return "redirect:/admin/product/productList" + cri.getListLink();
 	}
 }

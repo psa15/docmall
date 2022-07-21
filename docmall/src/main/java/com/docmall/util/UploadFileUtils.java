@@ -130,4 +130,23 @@ public class UploadFileUtils {
 		
 		return entity;
 	}
+	
+	//파일 삭제 
+	public static void deleteFile( String uploadPath, String fileName) {
+		
+		//원본 이미지 + 썸네일 이미지 삭제
+		/*
+		 uploadPath : C:\\Dev\\upload
+		 fileName : 2022/07/21/s_~~~~~~~~~.jpg
+		 */
+		
+		String front = fileName.substring(0, 11); //날짜 폴더 2022/07/21
+		String end = fileName.substring(13); //s_를 뺀 파일명 ~~~~~~~~~.jpg
+		String origin = front + end; //원본 이미지 파일
+		
+		//윈도우 운영체제 경로구분자 : /를 \로 변경하기
+		//File.separator : 각 운영체제에 맞게 변경
+		new File(uploadPath + origin.replace("/", File.separator)).delete(); //원본 이미지 삭제
+		new File(uploadPath + fileName.replace("/", File.separator)).delete(); //썸네일 이미지 삭제
+	}
 }

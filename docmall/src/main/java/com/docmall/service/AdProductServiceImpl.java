@@ -50,4 +50,16 @@ public class AdProductServiceImpl implements AdProductService {
 		return adPMapper.getProductTotalCount(cri);
 	}
 
+	//상품 수정 시 선택된 상품의 상품코드에 맞는 정보 가져오기
+	@Override
+	public ProductVO getProductByNum(Integer p_num) {
+		return adPMapper.getProductByNum(p_num);
+	}
+	
+	//상품 수정
+	@Override
+	public void productModify(ProductVO vo) {
+		adPMapper.productModify(vo);
+	}
+
 }

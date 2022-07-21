@@ -118,10 +118,10 @@ desired effect
 						      <td><fmt:formatDate value="${productVO.p_regdate}" pattern="yyyy-MM-dd hh:mm:ss"/></td>
 						      <!-- 판매여부 -->
 						      <td><c:out value="${productVO.p_buy_ok}" /></td>
-						      <!-- 수정 -->
-						      <td>수정</td>
+						      <!-- 수정 -->						      
+						      <td><button type="button" name="btnProductEdit" data-p_num="${productVO.p_num}" class="btn btn-link">수정</button></td>
 						      <!-- 삭제 -->
-						      <td>삭제</td>
+						      <td><button type="button" name="btnProductDelete" data-p_num="${productVO.p_num}" class="btn btn-link">삭제</button></td>
 						    </tr>
 						   </c:forEach> 
 						   
@@ -162,7 +162,12 @@ desired effect
 						    </c:if>   
 						  </ul>
 						  
-						  <form id="actionForm" action="/board/list" method="get">
+						  <%--- 페이지 번호 클릭시(/admin/product/productList)
+								상품 수정버튼 클릭 시(수정주소)
+								   - 상품코드 추가
+								상품 삭제버튼 클릭 시(삭제주소)
+								   - 상품코드 추가 --%>
+						  <form id="actionForm" action="/admin/product/productList" method="get">
 								<%-- 페이지 번호 클릭시 list주소로 보낼 파라미터 작업 - model 덕분에 ${pageMaker.cri.___} 사용 가능 --%>
 								<input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
 								<input type="hidden" name="amount" value="${pageMaker.cri.amount}">
@@ -271,5 +276,31 @@ desired effect
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
      Both of these plugins are recommended to enhance the
      user experience. -->
+
+     <script>
+
+        $(document).ready(function(){
+
+          //actionForm 참조
+          let actionForm = $("#actionForm");
+
+          //상품 수정 버튼 클릭 시
+          $("button[name='btnProductEdit']").on("click", function(){
+
+            //상품 목록 중 선택한 목록
+            console.log("상품코드: " + $(this).data("p_num"));
+
+            //상품코드를 자식으로 추가
+            actionForm.append("<input type='hidden' name='p_num' value='" + $(this).data("p_num") + "'>");
+            
+            //폼태그 주소 변경
+            actionForm.attr("action", "/admin/product/productModify");
+
+            actionForm.submit();
+
+          });
+
+        });
+    </script>
 </body>
 </html>
