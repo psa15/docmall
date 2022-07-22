@@ -28,4 +28,7 @@ public interface AdProductMapper {
 	
 	//상품 수정
 	void productModify(ProductVO vo);
+	
+	//상품 삭제
+	void productDelete(Integer p_num);
 }

@@ -200,7 +200,7 @@ public class AdProductController {
 		log.info("파일이름: " + fileName);
 		
 		//이미지를 byte[]로 읽어오는 작업 - UploadFileUtils		
-		return UploadFileUtils.getFile(uploadPath, folderName + "\\s_" + fileName);
+		return UploadFileUtils.getFile(uploadPath, folderName + "\\" + fileName);
 	}
 	
 	//상품수정 수정
@@ -219,12 +219,19 @@ public class AdProductController {
 		
 		//상품 정보
 		ProductVO vo = adPService.getProductByNum(p_num);
+		//상품등록시 첨부했던 이미지의 썸네일 보여주기		
+		vo.setP_image_dateFolder(vo.getP_image_dateFolder().replace("\\", "/"));
 		model.addAttribute("productVO", vo);
 		
 		//상품정보에서 1차 카테고리 코드를 참조
 		Integer f_ct_code = vo.getF_ct_code();
 		//1차 카테고리를 부모로 하는 2차 카테고리 정보
 		model.addAttribute("secCateList", adPService.getSubCateList(f_ct_code));
+		
+
+		
+			
+		
 	}
 	//상품 수정 저장
 	@PostMapping("/productModify")
@@ -247,6 +254,18 @@ public class AdProductController {
 		
 		//상품 정보 수정
 		adPService.productModify(vo);
+		
+		return "redirect:/admin/product/productList" + cri.getListLink();
+	}
+	
+	//상품 삭제 - 파라미터 : 상품 코드(삭제), 페이지 및 검색(목록으로 다시 돌아가기), 날짜 폴더, 파일 이름
+	@GetMapping("/deleteProduct")
+	public String deleteProduct(@RequestParam("p_num") Integer p_num, @ModelAttribute("cri") Criteria cri, String p_image_dateFolder, String p_image) {
+		
+		//이미지 파일 삭제
+		UploadFileUtils.deleteFile(uploadPath, p_image_dateFolder + "\\s_" + p_image);
+		
+		adPService.productDelete(p_num);
 		
 		return "redirect:/admin/product/productList" + cri.getListLink();
 	}

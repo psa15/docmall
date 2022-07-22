@@ -62,4 +62,10 @@ public class AdProductServiceImpl implements AdProductService {
 		adPMapper.productModify(vo);
 	}
 
+	//상품 삭제
+	@Override
+	public void productDelete(Integer p_num) {
+		adPMapper.productDelete(p_num);
+	}
+
 }

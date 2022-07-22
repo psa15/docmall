@@ -113,6 +113,14 @@ public class UploadFileUtils {
 
 		File file = new File(uploadPath, fileName);
 		
+		//이미지가 존재하지 ㅇ낳을 경우
+		if(!file.exists()) {
+			uploadPath = "C:\\Dev\\upload\\tmp\\";
+			fileName = "s_no_image.png";
+			
+			file = new File(uploadPath, fileName);
+		}
+		
 		ResponseEntity<byte[]> entity = null;		
 		
 		//헤더작업 : 서버에서 이미지 정보를 바이트 배열로 읽어와서 이 정보를 브라우저에 전달할 때 브라우저에게 이미지 파일이라고 알려주기 위해

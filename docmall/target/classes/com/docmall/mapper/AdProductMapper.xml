@@ -70,7 +70,7 @@
 			P_BUY_OK, P_REGDATE, P_UPDATEDATE, P_DETAIL
 		FROM(
 		    SELECT 
-		    	/*+ INDEX_DESC(tbl_board PK_BOARD) */ 
+		    	/*+ INDEX_DESC(TBL_PRODUCT PK_PRODUCT) */ 
 		    	ROWNUM RN,  P_NUM, F_CT_CODE, S_CT_CODE, P_NAME, P_COST, P_DISCOUNT, 
 		    	P_COMPANY, P_IMAGE, P_IMAGE_DATEFOLDER, P_AMOUNT,
                 P_BUY_OK, P_REGDATE, P_UPDATEDATE, P_DETAIL
@@ -137,5 +137,15 @@
 			P_NUM = #{p_num}
 	
 	</update>
+	
+	<!-- 상품 삭제 -->
+	<delete id="productDelete">
+	
+		DELETE FROM
+			TBL_PRODUCT
+		WHERE
+			P_NUM = #{p_num}
+	
+	</delete>
 	
 </mapper>

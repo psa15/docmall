@@ -73,7 +73,7 @@ desired effect
       			</div>	
       			<div class="box-body">
       				<form id="searchForm" action="/admin/product/productList" method="get">
-					  <%-- 검색 단추를 누르면  --%>
+					  <%-- 검색 단추를 누르면 - pageNum은 1로 돌아가게  --%>
 					    <select name="type">
 							 <option value="" <c:out value="${pageMaker.cri.type == null ? 'selected' : ''}" />>--</option> 
 							 <option value="N" <c:out value="${pageMaker.cri.type eq 'N' ? 'selected' : ''}" />>상품명</option>
@@ -83,7 +83,7 @@ desired effect
 					  	<input type="text" name="keyword" value="${pageMaker.cri.keyword}">
 					  	<input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
 					  	<input type="hidden" name="amount" value="${pageMaker.cri.amount}">
-					  	<button class="btn btn-info">Search</button>
+					  	<button type="button" id="btnSearch" class="btn btn-info">Search</button>
 					  </form>
 					
 					
@@ -109,7 +109,8 @@ desired effect
 						      <td scope="row"><c:out value="${productVO.p_num}" /></td>	
 						      <!-- 이미지 및 상품이름 -->				      
 						      <td>
-						      	<img src="/admin/product/displayFile?folderName=${productVO.p_image_dateFolder}&fileName=${productVO.p_image}" alt="이미지준비">
+						      	<img src="/admin/product/displayFile?folderName=${productVO.p_image_dateFolder}&fileName=s_${productVO.p_image}" 
+						      		alt="" style="width: 80px; height: 80px" onerror="this.onerror=null; this.src='/image/no_image.png'">
 						      	<a class="move" href="${productVO.p_num}"><c:out value="${productVO.p_name}" /></a>
 						      </td>							  
 						      <!-- 가격 -->
@@ -121,7 +122,10 @@ desired effect
 						      <!-- 수정 -->						      
 						      <td><button type="button" name="btnProductEdit" data-p_num="${productVO.p_num}" class="btn btn-link">수정</button></td>
 						      <!-- 삭제 -->
-						      <td><button type="button" name="btnProductDelete" data-p_num="${productVO.p_num}" class="btn btn-link">삭제</button></td>
+						      <td>
+                    <input type="hidden" name="p_image_dateFolder" value="${productVO.p_image_dateFolder}">
+                    <input type="hidden" name="p_image" value="${productVO.p_image}">
+                    <button type="button" name="btnProductDelete" data-p_num="${productVO.p_num}" class="btn btn-link">삭제</button></td>
 						    </tr>
 						   </c:forEach> 
 						   
@@ -141,18 +145,7 @@ desired effect
 						    <c:forEach begin="${pageMaker.startPage}" end="${pageMaker.endPage}" var="num">
 						    	<li class='page-item ${pageMaker.cri.pageNum == num ? "active" : ""}'><a class="page-link" href="${num}">${num}</a></li>
 						    </c:forEach>
-						    <%--
-						    	${pageMaker.cri.pageNum == num ? "active" : ""}
-					    	 	 - 현재 페이지와 num이 같으면 활성화(파랗게 칠해지는 거)
-					    	 	 - active가 현재페이지 파랗게 보여주는 키워드임 
-						     --%>
-						     
-						    <%-- 
-						    <li class="page-item active" aria-current="page">
-						      <span class="page-link">2</span>
-						    </li>
-						    <li class="page-item"><a class="page-link" href="#">3</a></li>
-						    --%>
+						
 						    
 						    <%-- 다음표시 --%>
 						    <c:if test="${pageMaker.next}">
@@ -169,10 +162,10 @@ desired effect
 								   - 상품코드 추가 --%>
 						  <form id="actionForm" action="/admin/product/productList" method="get">
 								<%-- 페이지 번호 클릭시 list주소로 보낼 파라미터 작업 - model 덕분에 ${pageMaker.cri.___} 사용 가능 --%>
-								<input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
-								<input type="hidden" name="amount" value="${pageMaker.cri.amount}">
-								<input type="hidden" name="type" value="${pageMaker.cri.type}">
-								<input type="hidden" name="keyword" value="${pageMaker.cri.keyword}">
+								<input type="hidden" name="pageNum" value="${cri.pageNum}">
+								<input type="hidden" name="amount" value="${cri.amount}">
+								<input type="hidden" name="type" value="${cri.type}">
+								<input type="hidden" name="keyword" value="${cri.keyword}">
 								<%-- 한 번 검색하면 list()메소드에 Criteria cri 에 값이 들어가게 되어 위 사용 가능 --%>
 							</form>
 						</nav>
@@ -281,7 +274,7 @@ desired effect
 
         $(document).ready(function(){
 
-          //actionForm 참조
+          //actionForm 참조 (상품 수정, 상품 삭제, 페이지 번호)
           let actionForm = $("#actionForm");
 
           //상품 수정 버튼 클릭 시
@@ -298,6 +291,57 @@ desired effect
 
             actionForm.submit();
 
+          });
+
+          //상품 삭제 버튼 클릭 시          
+          $("button[name='btnProductDelete']").on("click", function(){
+
+            //상품 목록 중 선택한 목록
+            //console.log("상품코드: " + $(this).data("p_num"));
+
+            if(!confirm($(this).data("p_num") + "번 상품을 삭제하시겠습니까?")) {
+              return;
+            }
+
+            //날짜 폴더와 파일 이름 추가
+            let p_image_dateFolder = $(this).siblings("input[name='p_image_dateFolder']").val();
+            //let p_image_dateFolder = $(this).parent().children("input[name='p_image_dateFolder']").val();
+            let p_image = $(this).siblings("input[name='p_image']").val();
+            //console.log("날짜 폴더: " + p_image_dateFolder)
+
+            actionForm.append("<input type='hidden' name='p_image_dateFolder' value='" + p_image_dateFolder + "'>");
+            actionForm.append("<input type='hidden' name='p_image' value='" + p_image + "'>");
+
+            //상품코드를 자식으로 추가
+            actionForm.append("<input type='hidden' name='p_num' value='" + $(this).data("p_num") + "'>");
+
+            //폼태그 주소 변경
+            actionForm.attr("action", "/admin/product/deleteProduct");
+
+            actionForm.submit();
+
+            });
+
+          let searchForm = $("#searchForm");
+
+          //검색버튼 클릭 시 pageNum 1로 초기화
+          $("#btnSearch").on("click", function(){
+            //searchForm.children("input[name='pageNum']").val(1);
+            searchForm.find("input[name='pageNum']").val(1);
+            searchForm.submit();
+          });
+
+          //페이지 번호 클릭
+          $("ul.pagination li a.page-link").on("click", function(e){
+
+            e.preventDefault();
+
+            let pageNum = $(this).attr("href");
+            //console.log("pageNum: " + pageNum )
+
+            //pageNum 필드는 acttionForm에 수동으로 작업되어 있어 추가하는 것이 아니라 참조하여 값을 변경
+            actionForm.find("input[name='pageNum']").val(pageNum);
+            actionForm.submit();
           });
 
         });
