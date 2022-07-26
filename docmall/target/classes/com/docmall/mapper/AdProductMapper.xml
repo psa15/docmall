@@ -54,6 +54,9 @@
 			 			<when test="type == 'C'.toString()">
 			 				P_COMPANY LIKE '%' || #{keyword} || '%'
 			 			</when>
+			 			<when test="type == 'Y'.toString()">
+			 				P_BUY_OK LIKE '%' || #{keyword} || '%'
+			 			</when>
 			 		</choose>
 			 	</trim>
 			</foreach>		

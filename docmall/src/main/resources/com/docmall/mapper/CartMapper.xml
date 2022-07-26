@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.mapper.CartMapper">
+
+	<!-- 장바구니 담기 기능 -->
+	<insert id="addCart">
+	
+		INSERT INTO 
+			TBL_CART
+				(CART_CODE, P_NUM, M_USERID, CART_ACOUNT)
+			VALUES
+				(SEQ_CART_CODE.nextval, #{p_num}, #{m_userid}, #{cart_acount})
+	
+	</insert>
+
+</mapper>

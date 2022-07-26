@@ -74,13 +74,28 @@ desired effect
       			<div class="box-body">
       				<form id="searchForm" action="/admin/product/productList" method="get">
 					  <%-- 검색 단추를 누르면 - pageNum은 1로 돌아가게  --%>
-					    <select name="type">
+					    <select name="type" id="selectType">
 							 <option value="" <c:out value="${pageMaker.cri.type == null ? 'selected' : ''}" />>--</option> 
 							 <option value="N" <c:out value="${pageMaker.cri.type eq 'N' ? 'selected' : ''}" />>상품명</option>
 							 <option value="C" <c:out value="${pageMaker.cri.type eq 'C' ? 'selected' : ''}" />>제조사</option>
 							 <option value="NC" <c:out value="${pageMaker.cri.type eq 'NC' ? 'selected' : ''}" />>상품명  or 제조사</option>
+							 <option value="Y" <c:out value="${pageMaker.cri.type eq 'Y' ? 'selected' : ''}" />>판매여부</option>
 					  	</select>
-					  	<input type="text" name="keyword" value="${pageMaker.cri.keyword}">
+					  	<c:if test="${pageMaker.cri.keyword == 'Y'}">
+					  		<select name="keyword">
+						      <option value="Y" selected>판매가능</option>
+						      <option value="N">판매불가</option>
+						    </select>
+					  	</c:if>
+					  	<c:if test="${pageMaker.cri.keyword == 'N'}">
+					  		<select name="keyword">
+						      <option value="Y">판매가능</option>
+						      <option value="N" selected>판매불가</option>
+						    </select>
+					  	</c:if>
+					  	<c:if test="${pageMaker.cri.keyword != 'N' and pageMaker.cri.keyword != 'Y'}"> -->
+				  			<input type="text" id="keywordTag" name="keyword" value="${pageMaker.cri.keyword}">
+					  	</c:if>
 					  	<input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
 					  	<input type="hidden" name="amount" value="${pageMaker.cri.amount}">
 					  	<button type="button" id="btnSearch" class="btn btn-info">Search</button>
@@ -343,6 +358,34 @@ desired effect
             actionForm.find("input[name='pageNum']").val(pageNum);
             actionForm.submit();
           });
+          
+          $("#selectType").change(function(){
+
+              let result = $("#selectType option:selected").val();
+              console.log(result);
+
+              let buyYN = "<select id='buyCan' name='keyword'><option value='Y'>판매가능</option><option value='N'>판매불가</option></select>"
+              
+              
+              $(this).parent().find("input[name='keyword']").val("");
+              $(this).parent().find("input[name='keyword']").remove();
+              $(this).parent().find("select[name='keyword']").remove();
+
+              if(result == "Y") {
+                $(this).after(buyYN);  
+               
+                
+              } else  {
+                // $(this).parent().find("input[name='keyword']").val("");
+                $(this).after("<input type='text' id='keywordTag' name='keyword' value='${pageMaker.cri.keyword}'>");
+                
+                $("#buyCan").remove();
+                
+              }
+
+              $(this).parent().find("input[name='keyword']").val("");
+              
+            }); 
 
         });
     </script>

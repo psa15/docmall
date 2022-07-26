@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.mapper.UserProductMapper">
+
+	<!-- 1차 카테고리 -->
+	<select id="getFirstCategoryList" resultType="com.docmall.domain.CategoryVO">
+	
+		SELECT
+			CT_CODE, CT_P_CODE, CT_NAME
+		FROM
+			TBL_CATEGORY
+		WHERE
+			CT_P_CODE IS NULL
+		
+	</select>
+
+	<!-- 2차 카테고리 -->
+	<select id="getSecondCategoryList" resultType="com.docmall.domain.CategoryVO">
+	
+		SELECT
+			CT_CODE, CT_P_CODE, CT_NAME
+		FROM
+			TBL_CATEGORY
+		WHERE
+			CT_P_CODE =#{categoryCode}
+	
+	</select>
+	
+	<!-- 검색 조건 쿼리 -->
+	<sql id="criteria">
+		<trim prefix="(" suffix=") AND " prefixOverrides="OR"><!-- serffix 공백 주의 -->
+			<foreach collection="cri.typeArr" item="type">
+			 	<trim prefix="OR">
+			 		<choose>
+			 			<when test="type == 'N'.toString()">
+			 				P_NAME LIKE '%' || #{cri.keyword} || '%'
+			 			</when>
+			 			<when test="type == 'C'.toString()">
+			 				P_COMPANY LIKE '%' || #{cri.keyword} || '%'
+			 			</when>
+			 		</choose>
+			 	</trim>
+			</foreach>		
+		</trim>
+	</sql>
+	
+	<!-- 상품목록 : 페이징 쿼리(인덱스 힌트 구문 사용) -->
+	<select id="getProductBySecondCategory" resultType="com.docmall.domain.ProductVO">
+		<![CDATA[
+		SELECT 
+			RN, P_NUM, F_CT_CODE, S_CT_CODE, P_NAME, P_COST, P_DISCOUNT, 
+			P_COMPANY, P_IMAGE, P_IMAGE_DATEFOLDER,  P_AMOUNT,
+			P_BUY_OK, P_REGDATE, P_UPDATEDATE, P_DETAIL
+		FROM(
+		    SELECT 
+		    	/*+ INDEX_DESC(TBL_PRODUCT PK_PRODUCT) */ 
+		    	ROWNUM RN,  P_NUM, F_CT_CODE, S_CT_CODE, P_NAME, P_COST, P_DISCOUNT, 
+		    	P_COMPANY, P_IMAGE, P_IMAGE_DATEFOLDER, P_AMOUNT,
+                P_BUY_OK, P_REGDATE, P_UPDATEDATE, P_DETAIL
+		    FROM 
+				TBL_PRODUCT
+		    WHERE
+		    	S_CT_CODE = #{s_ct_code} AND
+		]]>
+				<include refid="criteria"></include>
+				<!-- <![CDATA[ ]]> 안에 들어가면 태그가 아닌 문자열로 읽게 됨 -->
+		<![CDATA[
+			 ROWNUM <= #{cri.pageNum} * #{cri.amount}
+		)
+		WHERE RN > (#{cri.pageNum}-1) * #{cri.amount}	
+		]]>
+	</select>
+	
+	<!-- 상품 목록 개수 : 페이징 구현 사용 -->
+	<select id="totalProductCountBySecondCategory" resultType="int">
+		SELECT 
+			COUNT(*) 
+		FROM 
+			TBL_PRODUCT
+		WHERE
+			S_CT_CODE = #{s_ct_code} AND
+			<include refid="criteria"></include>
+			P_NUM > 0		
+	</select>
+	
+	<!-- 상품의 상품코드에 맞는 정보 가져오기 -->
+	<select id="getProductByNum" resultType="com.docmall.domain.ProductVO">
+	
+		SELECT
+			P_NUM, F_CT_CODE, S_CT_CODE, P_NAME, P_COST, P_DISCOUNT, 
+			P_COMPANY, P_IMAGE, P_IMAGE_DATEFOLDER,  P_AMOUNT,
+			P_BUY_OK, P_REGDATE, P_UPDATEDATE, P_DETAIL
+		FROM 
+			TBL_PRODUCT
+		WHERE
+			P_NUM = #{p_num}
+	
+	</select>
+</mapper>

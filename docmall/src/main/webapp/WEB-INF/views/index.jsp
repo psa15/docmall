@@ -18,6 +18,8 @@
     
 	<meta name="theme-color" content="#563d7c">
 
+	<!-- bootstrap 버전 및 여러 파일들 -->
+	<%@include file="/WEB-INF/views/include/common.jsp" %>
 
     <style>
       .bd-placeholder-img {
@@ -47,6 +49,8 @@
     
 	<!-- header -->
 	<%@include file="/WEB-INF/views/include/header.jsp" %>
+	<!-- 카테고리 -->
+	<%@include file="/WEB-INF/views/include/categoryMenu.jsp" %>
 	
 	<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
 	  <h1 class="display-4">Pricing</h1>
@@ -106,8 +110,7 @@
 	  <%@include file="/WEB-INF/views/include/footer.jsp" %>
 	</div>
 	
-	<!-- bootstrap 버전 및 여러 파일들 -->
-	<%@include file="/WEB-INF/views/include/common.jsp" %>
+
     
   </body>
 </html>
