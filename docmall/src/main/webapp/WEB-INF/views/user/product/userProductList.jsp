@@ -54,7 +54,7 @@
 	<%@include file="/WEB-INF/views/include/categoryMenu.jsp" %>
 	
 	<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-	  <h1 class="display-4">Pricing</h1>
+	  <h1 class="display-4">${ct_name}</h1>
 	  <p class="lead">Quickly build an effective pricing table for your potential customers with this Bootstrap example. It’s built with default Bootstrap components and utilities with little customization.</p>
 	</div>
 	
@@ -191,7 +191,7 @@
 						if(result == "success") {
 							alert("장바구니가 추가되었습니다.");
 							if(confirm("장바구니로 이동하시겠습니까?")){
-								location.href = "장바구니 주소";
+								location.href = "/user/cart/cartList";
 							}
 						}
 					}

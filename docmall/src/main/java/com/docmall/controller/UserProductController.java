@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.docmall.domain.CategoryVO;
@@ -55,8 +54,8 @@ public class UserProductController {
 	}
 	
 	//상품 목록 + 페이징 (restapi)
-	@GetMapping("/userProductList/{ct_code}")
-	public String userProductList(@PathVariable("ct_code") Integer ct_code, @ModelAttribute("cri") Criteria cri, Model model) {
+	@GetMapping("/userProductList/{ct_code}/{ct_name}")
+	public String userProductList(@PathVariable("ct_code") Integer ct_code, @ModelAttribute("cri") Criteria cri, Model model, @PathVariable("ct_name") String ct_name) {
 		
 		log.info("2차 카테고리 코드: " + ct_code);
 		
