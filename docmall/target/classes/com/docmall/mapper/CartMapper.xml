@@ -46,5 +46,25 @@
 			CART_CODE = #{cart_code}
 	
 	</update>
+	
+	<!-- 장바구니 삭제 -->
+	<delete id="deleteCart">
+	
+		DELETE
+			TBL_CART
+		WHERE
+			CART_CODE = #{cart_code}
+	
+	</delete>
+	
+	<!-- 장바구니 비우기 -->
+	<delete id="clearCart">
+	
+		DELETE
+			TBL_CART
+		WHERE
+			M_USERID = #{m_userid}
+	
+	</delete>
 
 </mapper>

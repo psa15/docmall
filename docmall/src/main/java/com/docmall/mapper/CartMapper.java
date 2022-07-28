@@ -17,4 +17,10 @@ public interface CartMapper {
 	
 	//장바구니에서 수량 변경
 	void changeCartAcount(@Param("cart_code") Long cart_code, @Param("cart_acount") int cart_acount);
+	
+	//장바구니 삭제
+	void deleteCart(Long cart_code);
+	
+	//장바구니 비우기
+	void clearCart(String m_userid);
 }

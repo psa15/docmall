@@ -113,7 +113,9 @@
 						      <td>
 			                    <input type="hidden" name="p_image_dateFolder" value="${cartVO.p_image_dateFolder}">
 			                    <input type="hidden" name="p_image" value="${cartVO.p_image}">
-			                    <button type="button" name="btnCartDelete" data-cart_code="${cartVO.cart_code}" class="btn btn-link">삭제</button></td>
+			                    <button type="button" name="btnCartDelete" data-p_name="${cartVO.p_name}" data-cart_code="${cartVO.cart_code}" class="btn btn-link">삭제</button>
+			                    <a href="/user/cart/deleteCart?cart_code=${cartVO.cart_code}">Delete</a>
+			                  </td>
 						    </tr>
 						    <c:set var="sum" value="${sum + price}"></c:set>
 						   </c:forEach> 
@@ -121,12 +123,25 @@
 						  </tbody>
 						  <tfoot>
 						  	<tr>
-						  		<td colspan="6" style="text-align: right"> 
-						  			총 구매 금액: <span id="cartTotalPrice"><fmt:formatNumber type="number" maxFractionDigits="3" value="${sum}" /></span>
-						  		</td>
+						  		<%-- empty : 데이터가 존재하지 않으면 true, 존재하면 false --%>
+						  		<c:if test="${!empty cartList}">
+							  		<td colspan="6" style="text-align: right"> 
+							  			총 구매 금액: <span id="cartTotalPrice"><fmt:formatNumber type="number" maxFractionDigits="3" value="${sum}" /></span>
+							  		</td>
+						  		</c:if>
+						  		<c:if test="${empty cartList}">
+							  		<td colspan="6" style="text-align: center"> 
+							  			장바구니에 담긴 상품이 없습니다.
+							  		</td>
+						  		</c:if>
 						  	</tr>
 						  </tfoot>
 						</table>							
+	      			</div>
+	      			<div class="box-footer text-center">
+	      				<button type="button" name="btnClearCart" class="btn btn-primary">장바구니 비우기</button>
+	      				<button type="button" name="btnShopping"  class="btn btn-primary">계속 쇼핑하기</button>
+	      				<button type="button" name="btnOrder"  class="btn btn-primary">주문하기</button>
 	      			</div>		
 	      		</div>     
 	      	</div>      
@@ -181,25 +196,9 @@
 					}
 				});
 			});
-		});
-
-		//숫자값을 천단위 마다 콤마 찍기
-		$.numberWithCommas = function(x) {
-			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-		}
-
-		//3자리마다 콤마 제거하기
-		$.withoutCommas = function (x) {
-			return x.toString().replace(",", '');
-		}
-
-		//ajax 사용안한 수량변경2
-		$(function(){
 
 			//수량변경 버튼 - 장바구니 코드, 변경 수량
 			$("button[name='btnCartAcountChange2']").on("click", function(){
-				
-				let btnCartAcountChange = $(this);
 				
 				//장바구니 코드 값 참조
 				let cart_code = $(this).data("cart_code");
@@ -210,7 +209,51 @@
 				location.href ="/user/cart/cartAcountChange2?cart_code=" + cart_code + "&cart_acount=" + cart_acount;
 				
 			});
+
+			//상품 삭제 
+			$("button[name='btnCartDelete']").on("click", function(){
+
+				// console.log("삭제버튼 클릭");
+				
+				//장바구니 코드 값 참조
+				let cart_code = $(this).data("cart_code");
+				//console.log("장바구니 코드: " + cart_code);
+
+				if(!confirm($(this).data("p_name") + " 상품을 삭제하시겠습니까?")){
+					return;
+				}
+
+				location.href ="/user/cart/deleteCart?cart_code=" + cart_code;
+				
+			});
+
+			//장바구니 비우기 btnClearCart
+			$("button[name='btnClearCart']").on("click", function(){
+				// console.log("장바구니 비우기");
+
+				if(!confirm("장바구니를 비우시겠습니까?")){
+					return;
+				}
+
+				
+
+				location.href ="/user/cart/clearCart"; //session정보에 아이디 정보가 있기 때문에 파라미터값이 필요 없음
+				$("tfoot tr").remove();
+				
+			});
 		});
+
+		/* 함수 */
+		//숫자값을 천단위 마다 콤마 찍기
+		$.numberWithCommas = function(x) {
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		}
+
+		//3자리마다 콤마 제거하기
+		$.withoutCommas = function (x) {
+			return x.toString().replace(",", '');
+		}
+
 	  </script>
   </body>
 

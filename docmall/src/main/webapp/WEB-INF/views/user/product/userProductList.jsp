@@ -66,9 +66,10 @@
 	          <div class="card mb-4 shadow-sm">
 	            <!-- <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg> -->
 	            <!-- 상품 이미지 -->
-	            <img src="/user/product/displayFile?folderName=${productVO.p_image_dateFolder}&fileName=s_${productVO.p_image}" 
-					 alt="" class="bd-placeholder-img card-img-top" width="100%" height="225" onerror="this.onerror=null; this.src='/image/no_image.png'">
-	
+	            <a class="move" href="${productVO.p_num}">
+		            <img src="/user/product/displayFile?folderName=${productVO.p_image_dateFolder}&fileName=s_${productVO.p_image}" 
+						 alt="" class="bd-placeholder-img card-img-top" width="100%" height="225" onerror="this.onerror=null; this.src='/image/no_image.png'">
+				</a>
 	            <div class="card-body">
 	              <p class="card-text">
 	              	${productVO.p_name}<br>
@@ -88,6 +89,44 @@
         </c:forEach>
         
       </div>
+      <div class="row">
+      	<div class = "col-12">
+      		<nav aria-label="...">
+			  <ul class="pagination justify-content-center">
+			  
+			  	<%-- 이전표시 --%>
+			  	<c:if test="${pageMaker.prev}">
+				    <li class="page-item">
+				      <a class="page-link" href="${pageMaker.startPage-1}">이전</a>
+				    </li>
+			    </c:if>
+			    
+			    <%-- 페이지 번호 표시 ( 1 2 3 4 5) --%>
+			    <c:forEach begin="${pageMaker.startPage}" end="${pageMaker.endPage}" var="num">
+			    	<li class='page-item ${pageMaker.cri.pageNum == num ? "active" : ""}'><a class="page-link" href="${num}">${num}</a></li>
+			    </c:forEach>
+			
+			    
+			    <%-- 다음표시 --%>
+			    <c:if test="${pageMaker.next}">
+				    <li class="page-item">
+				      <a class="page-link" href="${pageMaker.endPage +1}">다음</a>
+				    </li>
+			    </c:if>   
+			  </ul>
+			  
+			  <form id="actionForm" action="/user/product/userProductList" method="get">
+					<input type="hidden" name="pageNum" value="${cri.pageNum}">
+					<input type="hidden" name="amount" value="${cri.amount}">
+					<input type="hidden" name="type" value="${cri.type}">
+					<input type="hidden" name="keyword" value="${cri.keyword}">
+					<input type="hidden" name="ct_code" value="${ct_code}">
+					<input type="hidden" name="ct_name" value="${ct_name}">
+			  </form>
+			</nav>
+      	</div>
+      </div>
+      
       <!-- footer -->
 	  <%@include file="/WEB-INF/views/include/footer.jsp" %>
     </div>
@@ -196,6 +235,47 @@
 						}
 					}
 				});
+			});
+			
+			//페이지 번호 클릭
+			let actionForm = $("#actionForm");
+	          $("ul.pagination li a.page-link").on("click", function(e){
+	
+		            e.preventDefault();
+		
+		            let pageNum = $(this).attr("href");
+		            //console.log("pageNum: " + pageNum )
+		
+		            let url = "/user/product/userProductList/${ct_code}/" + encodeURIComponent("${ct_name}");
+		            //pageNum 필드는 acttionForm에 수동으로 작업되어 있어 추가하는 것이 아니라 참조하여 값을 변경
+		            actionForm.find("input[name='pageNum']").val(pageNum);
+		            actionForm.attr("action", url)
+		            actionForm.submit();
+	          });
+
+			let searchForm = $("#searchForm");
+
+			//검색버튼 클릭 시 pageNum 1로 초기화
+			$("#btnSearch").on("click", function(){
+			//searchForm.children("input[name='pageNum']").val(1);
+			searchForm.find("input[name='pageNum']").val(1);
+			searchForm.submit();
+			});
+
+			//상품 이미지 / 상품 제목 클릭
+			$("div.container a.move").on("click", function(e){
+				e.preventDefault();
+
+				let p_num = $(this).attr("href"); //attr: 속성의 값
+
+				actionForm.attr("method", "get");
+				actionForm.attr("action", "/user/product/userProductDetail");
+
+				actionForm.append("<input type='hidden' name='p_num' value='" + p_num + "'>");
+				
+				//카테고리코드와 이름 가져오기
+				
+				actionForm.submit();
 			});
 	
 		});

@@ -2,6 +2,7 @@ package com.docmall.controller;
 
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import com.docmall.domain.CartVO;
 import com.docmall.domain.CartVOList;
 import com.docmall.domain.MemberVO;
 import com.docmall.service.CartService;
+import com.docmall.util.UploadFileUtils;
 
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -27,6 +29,9 @@ import lombok.extern.log4j.Log4j;
 @RequestMapping("/user/cart/*")
 public class CartController {
 
+	@Resource(name = "uploadPath") 
+	private String uploadPath;
+	
 	@Setter(onMethod_ = {@Autowired})
 	private CartService cartService;
 	
@@ -70,6 +75,7 @@ public class CartController {
 		
 	}
 	
+	//상품 수량 변경1 -ajax
 	@ResponseBody
 	@GetMapping("/cartAcountChange")
 	public ResponseEntity<String> cartAcountChange(@RequestParam("cart_code") Long cart_code, @RequestParam("cart_acount") int cart_acount) {
@@ -82,12 +88,45 @@ public class CartController {
 		
 		return entity;
 	}
-	
+	//상품 수량 변경2 - 동기식
 	@GetMapping("/cartAcountChange2")
 	public String cartAcountChange2(@RequestParam("cart_code") Long cart_code, @RequestParam("cart_acount") int cart_acount) {
 				
 		cartService.changeCartAcount(cart_code, cart_acount);
 		
 		return "redirect:/user/cart/cartList";
+	}
+	
+	//상품 삭제
+	//등록, 수정, 삭제 한 후 다른 주소로 이동해야 하는 경우에는 메소드의 리턴타입을 String으로, return값을 "redirect:/이동주소"로
+	@GetMapping("/deleteCart")
+	public String deleteCart(@RequestParam("cart_code") Long cart_code) {
+		
+		cartService.deleteCart(cart_code);
+		
+		return "redirect:/user/cart/cartList";
+	}
+	//장바구니 비우기
+	@GetMapping("/clearCart")
+	public String clearCart(HttpSession session) {
+		
+		String m_userid = ((MemberVO) session.getAttribute("loginStatus")).getM_userid();
+		
+		cartService.clearCart(m_userid);
+		
+		return "redirect:/user/cart/cartList";
+	}
+	
+	//상품 목록에서 이미지 보여주기
+	@ResponseBody
+	@GetMapping("/displayFile")
+	public ResponseEntity<byte[]> displayFile(String folderName, String fileName){
+		//String fileName : jsp 페이지에 뿌려진 날짜 폴더와 이미지 이름이 합쳐져서 들어올 예정
+		
+		log.info("폴더이름: " + folderName);
+		log.info("파일이름: " + fileName);
+		
+		//이미지를 byte[]로 읽어오는 작업 - UploadFileUtils		
+		return UploadFileUtils.getFile(uploadPath, folderName + "\\" + fileName);
 	}
 }

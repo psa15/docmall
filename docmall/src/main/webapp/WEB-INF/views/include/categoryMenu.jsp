@@ -97,8 +97,8 @@
 
 				let ct_code = $(this).attr("href");
 				let ct_name = $(this).text();
-				console.log(ct_name);
-				location.href = "/user/product/userProductList/" + ct_code + "/" + ct_name;
+				//console.log(ct_name);
+				location.href = "/user/product/userProductList/" + ct_code + "/" + encodeURIComponent(ct_name);
 
 			});
 

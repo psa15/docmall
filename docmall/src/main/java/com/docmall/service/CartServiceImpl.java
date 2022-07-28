@@ -35,8 +35,16 @@ public class CartServiceImpl implements CartService {
 		cartMapper.changeCartAcount(cart_code, cart_acount);
 	}
 
-	
-	
-	
+	//장바구니 삭제
+	@Override
+	public void deleteCart(Long cart_code) {
+		cartMapper.deleteCart(cart_code);
+	}
+
+	//장바구니 비우기
+	@Override
+	public void clearCart(String m_userid) {
+		cartMapper.clearCart(m_userid);
+	}
 	
 }

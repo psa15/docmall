@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.docmall.domain.CategoryVO;
@@ -56,11 +57,12 @@ public class UserProductController {
 	//상품 목록 + 페이징 (restapi)
 	@GetMapping("/userProductList/{ct_code}/{ct_name}")
 	public String userProductList(@PathVariable("ct_code") Integer ct_code, @ModelAttribute("cri") Criteria cri, Model model, @PathVariable("ct_name") String ct_name) {
+		///userProductList/{ct_code}/{ct_name} 의 ct_name은 userProductList페이지에서 ${ct_name}로 사용 가능
 		
 		log.info("2차 카테고리 코드: " + ct_code);
 		
 		//한 페이지에 9개의 상품이 출력되게
-		//cri.setAmount(9);
+		cri.setAmount(9);
 		
 		List<ProductVO> productList = userPService.getProductBySecondCategory(ct_code, cri);
 		
@@ -110,7 +112,21 @@ public class UserProductController {
 		return entity;
 	}
 	
-	//상품 상세
+	//상품 상세 - 클라이언트에서 actionForm으로 전송됨
+	@GetMapping("/userProductDetail")
+	public String productDetail(@RequestParam("p_num") Integer p_num, @ModelAttribute("ct_code") Integer ct_code,
+								@ModelAttribute("ct_name") String ct_name,  @ModelAttribute("cri") Criteria cri, Model model) {
+					
+		ProductVO vo = userPService.getProductByNum(p_num);
+		vo.setP_image_dateFolder(vo.getP_image_dateFolder().replace("\\", "/"));
+		
+		log.info("상품코드: " + p_num);
+		log.info("검색 및 페이징 정보: " + cri);
+		
+		model.addAttribute("productVO", vo);
+		
+		return "/user/product/userProductDetail";
+	}
 	
 	//장바구니
 	
