@@ -63,7 +63,25 @@
 	}
   </script>
     
+	
+  <%-- 핸들바 템플릿 --%>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+  
+  <script id="reviewTemplate" type="text/x-handlebars-template">
+	
+	{{#each .}}
+	<div class="list-group">
+		<div class="d-flex w-100 justify-content-between">
+			<h6 class="mb-1">{{idDisplay m_userid}}</h6>
+			<small>평점 : {{displayStar r_score}}</small>
+		</div>
+		<p class="mb-1">{{r_content}}</p>
+		<small>{{prettifyDate r_regdate}}</small>
+	</div>
+	<hr>
+	{{/each}}
 
+  </script>
 	
   </head>
   <body>
@@ -115,12 +133,55 @@
 			    <p>${productVO.p_detail}</p>
 			  </div>
 			  <div id="productDetailReview">
-			    <div class="col-6">
-			    	REVIEW
-			    </div>
-			    <div class="col-6">
-			    	<button type="button" id="btnReview" class="btn btn-info">상품 리뷰 쓰기</button>
-			    </div>
+			  	<div class="row">
+				    <div class="col-6">
+				    	REVIEW
+				    </div>
+				    <div class="col-6">
+				    	<button type="button" id="btnReview" class="btn btn-info">상품 리뷰 쓰기</button>
+					</div>
+				</div>		  
+				<!--상품 후기  출력 위치-->
+				<div id="reviewListResult">
+<!-- 					<div class="list-group">
+						<div class="d-flex w-100 justify-content-between">
+							<h6 class="mb-1">아이디</h6>
+							<small>평점</small>
+						</div>
+						<p class="mb-1">Some placeholder content in a paragraph.</p>
+						<small>And some small print.</small>
+					</div>
+					<hr>
+					<div class="list-group">
+						<div class="d-flex w-100 justify-content-between">
+							<h6 class="mb-1">아이디</h6>
+							<small>평점</small>
+						</div>
+						<p class="mb-1">Some placeholder content in a paragraph.</p>
+						<small>And some small print.</small>
+					</div>
+					<hr>
+					<div class="list-group">
+						<div class="d-flex w-100 justify-content-between">
+							<h6 class="mb-1">아이디</h6>
+							<small>평점</small>
+						</div>
+						<p class="mb-1">Some placeholder content in a paragraph.</p>
+						<small>And some small print.</small>
+					</div> -->
+				</div>
+
+
+				<!-- 상품 후기 페이징 출력 위치-->				
+				<div>
+					<nav aria-label="Page navigation example">
+					  <ul class="pagination" id="reviewPagingResult">
+					  </ul>
+					</nav>
+				</div>
+
+
+			    
 			  </div>
 			  <div id="tabs-3">
 			    <p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
@@ -243,11 +304,11 @@
 							alert("상품후기가 등록됨");
 							
 							//상품후기 목록
-							$.getJSON("/user/review/list/135/1", function(data){
-								console.log("목록: " + data.list[0].r_num);
-								console.log("페이지 정보: " + data.pageMaker.startPage);
-							});
+							reviewPage = 1;
+							url = "/user/review/list/" + $("#p_num").val() + "/" + reviewPage;							
+							getPage(url);
 							
+
 							//상품후기 대화상자 숨김
 							$("#reviewModal").modal('hide');
 
@@ -259,9 +320,132 @@
 				
 			});
 		});
+
+		let reviewPage = 1;
+		let url = "/user/review/list/" + ${productVO.p_num} + "/" + reviewPage;
+		getPage(url);
+
+		//페이지 번호 얻는 함수
+		function getPage(pageInfo) {
+			$.getJSON(pageInfo, function(data){
+
+				if(data.list.length > 0) {
+
+					//함수 : 상품후기 목록
+					printReviewList(data.list, $("#reviewListResult"), $("#reviewTemplate"));
+
+					//함수 : 페이징 기능
+					printReviewPaging(data.pageMaker, $("#reviewPagingResult"));
+				}
+			});
+		}
+
+		
+		
+		//상품 후기 출력하는 함수
+		let printReviewList = function(reviewArrData, target, templateObj) {
+			//핸들바 코드가 존재하는 상품 후기 디자인 코드를 컴파일
+			let template = Handlebars.compile(templateObj.html());
+
+			//템플릿과 소스가 합쳐진 결과 - 상품 후기 목록 데이터 _ 상품 페이징 UI
+			let html =template(reviewArrData);
+
+			target.empty();
+			target.append(html); //자식으로 추가
+		}
+
+		
+
+		//상품 후기 등록일 : 사용자 정의 Helper 함수 -> 템플릿에서 사용
+		Handlebars.registerHelper("prettifyDate", function(timeValue){
+
+			let dateObj = new Date(timeValue);
+			let year = dateObj.getFullYear();
+			let month = dateObj.getMonth();
+			let date = dateObj.getDate();
+
+			return year + "/" + month + "/" + date;
+		});
+
+		//별점 평점 표시하기
+		Handlebars.registerHelper("displayStar", function(rating){
+
+			let stars = "";
+			switch(rating) {
+				case 1:
+					stars = "★☆☆☆☆";
+				case 2:
+					stars = "★★☆☆☆";
+				case 3:
+					stars = "★★★☆☆";
+				case 4:
+					stars = "★★★★☆";
+				case 5:
+					stars = "★★★★★";
+			}
+
+			return stars;
+		});
+
+		//아이디 4글자만 보여주기
+		Handlebars.registerHelper("idDisplay", function(userid){
+			return userid.substring(0, 4) + "****";
+		});
+
+		//상품 후기 페이징 함수
+		let printReviewPaging = function(pageMaker, target) {
+
+			let pagingStr = "";
+
+			/*
+			<li class="page-item"><a class="page-link" href="#">Previous</a></li>
+			<li class="page-item"><a class="page-link" href="#">1</a></li>
+			<li class="page-item"><a class="page-link" href="#">2</a></li>
+			<li class="page-item"><a class="page-link" href="#">3</a></li>
+			<li class="page-item"><a class="page-link" href="#">Next</a></li>
+			*/
+			//이전 표시
+			if(pageMaker.prev) {
+				pagingStr += "<li class='page-item'><a class='page-link' href='" + (pageMaker.startPage - 1) + "'>이전</a></li>";
+			}
+
+			//페이지 번호 표시
+			for(let i=pageMaker.startPage; i<=pageMaker.endPage; i++) {
+				let classStr = pageMaker.cri.pageNum == i ? 'active' : '';
+				pagingStr += "<li class='page-item " + classStr + "''><a class='page-link' href ='" + i + "'>" + i + "</a></li>";
+			}
+
+			//다음 표시
+			if(pageMaker.next) {
+				pagingStr += "<li class='page-item'><a class='page-link' href='" + (pageMaker.endPage + 1) + "'>다음</a></li>";
+			}
+
+			target.children().remove();
+			target.html(pagingStr);
+
+		}
+
+		
+	
+
+		//이전, 페이지 번호, 다음 클릭
+		$("nav ul#reviewPagingResult").on("click", "li a.page-link", function(e){
+			e.preventDefault();
+			// console.log("페이지 번호 클릭");
+
+			reviewPage = $(this).attr("href");
+			url = "/user/review/list/" + $("#p_num").val() + "/" + reviewPage;	
+			// console.log(url);
+			getPage(url);
+
+		});
+
+		
+		
 	
 	  </script>
-	  
+
+
 	  <!-- 리뷰 작성할 모달 -->
 		<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		  <div class="modal-dialog">

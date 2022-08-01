@@ -21,7 +21,6 @@ import com.docmall.domain.MemberVO;
 import com.docmall.domain.ReviewVO;
 import com.docmall.dto.Criteria;
 import com.docmall.dto.PageDTO;
-import com.docmall.mapper.ReviewMapper;
 import com.docmall.service.ReviewService;
 
 import lombok.Setter;
