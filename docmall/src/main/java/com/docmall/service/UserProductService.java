@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.docmall.domain.CategoryVO;
 import com.docmall.domain.ProductVO;
+import com.docmall.domain.ReviewVO;
 import com.docmall.dto.Criteria;
 
 public interface UserProductService {
@@ -22,4 +23,5 @@ public interface UserProductService {
 
 	//상품 상세정보 - 상품의 상품코드에 맞는 정보 가져오기
 	ProductVO getProductByNum(Integer p_num);
+
 }

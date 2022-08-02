@@ -35,4 +35,22 @@ public class ReviewServiceImpl implements ReviewService {
 		return rMapper.totalReview(p_num);
 	}
 
+	//리뷰 수정
+	@Override
+	public void update(ReviewVO vo) {
+		rMapper.update(vo);
+	}
+
+	//리뷰 삭제
+	@Override
+	public void delete(ReviewVO vo) {
+		rMapper.delete(vo);
+	}
+
+	//리뷰 삭제2
+	@Override
+	public void deleteReview(Integer r_num) {
+		rMapper.deleteReview(r_num);
+	}
+
 }

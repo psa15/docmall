@@ -43,5 +43,39 @@
 			P_NUM = #{p_num}
 	
 	</select>
+	
+	<!-- 리뷰 수정 -->
+	<update id="update">
+	
+		UPDATE
+			TBL_REVIEW
+		SET
+			R_CONTENT = #{r_content},
+			R_SCORE = #{r_score},
+			R_REGDATE = sysdate
+		WHERE 
+			R_NUM = #{r_num}
+	
+	</update>
+	
+	<!-- 리뷰 삭제 -->
+	<delete id="delete">
+	
+		DELETE FROM
+			TBL_REVIEW
+		WHERE
+			R_NUM = #{r_num}
+	
+	</delete>
+	
+	<!-- 리뷰 삭제 -->
+	<delete id="deleteReview">
+	
+		DELETE FROM
+			TBL_REVIEW
+		WHERE
+			R_NUM = #{r_num}
+	
+	</delete>
 
 </mapper>

@@ -14,5 +14,14 @@ public interface ReviewService {
 	List<ReviewVO> getReviewList(Integer p_num, Criteria cri);
 	
 	//전체 리뷰 개수
-	int totalReview(Integer p_num);
+	int totalReview(Integer p_num);	
+	
+	//리뷰 수정
+	void update(ReviewVO vo);
+	
+	//리뷰 삭제
+	void delete(ReviewVO vo);
+	
+	//리뷰 삭제2
+	void deleteReview(Integer r_num);
 }

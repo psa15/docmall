@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,11 +57,54 @@ public class ReviewController {
 		return entity;
 	}
 	
-	//상품 후기 수정
-	
+	//상품 후기 수정 : rest API 개발
+	@PatchMapping(value = "/modify", consumes = "application/json", produces = {MediaType.TEXT_PLAIN_VALUE})
+	public ResponseEntity<String> modify(@RequestBody ReviewVO vo, HttpSession session) {
+		
+		log.info("상품 후기: " + vo);
+		
+		String m_userid = ((MemberVO) session.getAttribute("loginStatus")).getM_userid();
+		vo.setM_userid(m_userid);
+		
+		ResponseEntity<String> entity = null;
+		
+		rService.update(vo);
+		
+		entity = new ResponseEntity<String>("success", HttpStatus.OK);
+		
+		return entity;
+	}
 	
 	//상품 후기 삭제
+	/*
+	 * @DeleteMapping(value = "/delete", consumes = "application/json", produces =
+	 * {MediaType.TEXT_PLAIN_VALUE}) public ResponseEntity<String>
+	 * delete(@RequestBody ReviewVO vo, HttpSession session) {
+	 * 
+	 * String m_userid = ((MemberVO)
+	 * session.getAttribute("loginStatus")).getM_userid(); vo.setM_userid(m_userid);
+	 * 
+	 * ResponseEntity<String> entity = null;
+	 * 
+	 * rService.delete(vo);
+	 * 
+	 * entity = new ResponseEntity<String>("success", HttpStatus.OK);
+	 * 
+	 * return entity; }
+	 */
 	
+	@DeleteMapping(value = "/delete/{r_num}", consumes = "application/json", produces = {MediaType.TEXT_PLAIN_VALUE})
+	public ResponseEntity<String> delete(@PathVariable("r_num") Integer r_num, HttpSession session) {
+		
+		
+		ResponseEntity<String> entity = null;
+		
+		rService.deleteReview(r_num);
+		
+		entity = new ResponseEntity<String>("success", HttpStatus.OK);
+		
+		return entity;
+	}
 	
 	//상품 후기 목록 : 목록데이터 + 페이징 정보 -> JSON포맷으로 클라이언트에게 2개 정보 다 보내야 함
 	@GetMapping("/list/{p_num}/{page}")
@@ -69,8 +114,10 @@ public class ReviewController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		//검색기능을 사용했다면 파라미터에 Criteria가 있어야 함!
-		//1)댓글목록
 		Criteria cri = new Criteria();
+		cri.setPageNum(page);
+		
+		//1)댓글목록		
 		List<ReviewVO> reviewList = rService.getReviewList(p_num, cri);		
 		map.put("list", reviewList);
 		

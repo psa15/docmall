@@ -73,10 +73,19 @@
 	<div class="list-group">
 		<div class="d-flex w-100 justify-content-between">
 			<h6 class="mb-1">{{idDisplay m_userid}}</h6>
-			<small>평점 : {{displayStar r_score}}</small>
+			<p>
+				<small>평점 : {{displayStar r_score}}</small>
+				{{modifyReview m_userid r_num}}
+				<input type="hidden" name="r_score" value="{{r_score}}">
+			</p>
 		</div>
-		<p class="mb-1">{{r_content}}</p>
-		<small>{{prettifyDate r_regdate}}</small>
+		<div class="d-flex w-100 justify-content-between">
+			<p class="mb-1"><span class="r_content">{{r_content}}</span></p>
+			<p>
+				<small>{{prettifyDate r_regdate}}</small>
+				{{deleteReview m_userid r_num}}
+			</p>
+		</div>
 	</div>
 	<hr>
 	{{/each}}
@@ -247,7 +256,46 @@
 			//상품 후기 모달 상자
 			$("button#btnReview").on("click", function(){
 
-				console.log("버튼클릭");
+				// console.log("버튼클릭");
+
+				$("#reviewModal .btnReview").hide();
+				$("#reviewModal #btnReviewWrite").show();
+
+				$("#reviewModal").modal('show');
+			});
+
+			//상품 후기 수정 모달 상자
+			$("div#reviewListResult").on("click", "p a.modifyReview", function(e){
+				e.preventDefault();
+
+				// console.log("버튼클릭");
+
+				//모달 대화상자 버튼
+				$("#reviewModal .btnReview").hide(); //모달 상자에서 close버튼 제외한 모든 버튼 숨기기
+				$("#reviewModal #btnRevieModify").show(); //후기 수정 버튼만 보여주기
+
+				//모달 대화상자 후기 내용 불러오기
+				$(".modal-title").html("후기 수정");
+				
+				// let r_content = $("div#reviewListResult p span.r_content").text(); //상품 후기 내용-> 현재 페이지의 모든 후기 내용이 불러와짐
+				let r_content = $(this).parents("div.list-group").find("p.mb-1 span.r_content").html();
+				let r_num = $(this).attr("href"); //상품 후기 코드
+				let r_score = $(this).parents("div.list-group").find("p  input[name='r_score']").val();
+
+				//리뷰 내용				
+				$("textarea#r_content").val(r_content); 
+				$("input#r_num").val(r_num);
+
+				//별 평점 표시
+				$("#star_r_score a.r_score").each(function(index, item){
+					if(index < r_score) {
+						$(item).addClass('on');
+					}else {
+						$(item).removeClass('on'); //$(item) : 현재 진행중인 a태그
+					}
+				});
+
+				//모달 대화상자 띄우기
 				$("#reviewModal").modal('show');
 			});
 
@@ -319,6 +367,103 @@
 				});
 				
 			});
+
+			//상품후기 수정 버튼 클릭
+			$("#btnRevieModify").on("click", function(){
+
+				let r_score = 0;
+				let r_content = $("#r_content").val();
+				let r_num = $("#r_num").val();
+
+				//별점 5개여서 each 5번 돌음
+				$("#star_r_score a.r_score").each(function(index, item){
+					
+					if($(this).attr("class") == 'r_score on') {
+						r_score += 1;
+					}
+					
+				});
+				console.log("별 평점: " + r_score);
+
+				if(r_score == 0) {
+					alert("별 평점을 선택해 주세요");
+					return;
+				}
+
+				if(r_content == "") {
+					alert("상품 후기를 작성해 주세요");
+					return;
+				}
+
+				let data = { r_num:r_num, r_score:r_score, r_content:r_content };
+				//data라는 객체를 json문자열로 변환시켜야 함 -JSON.stringify(data)
+				$.ajax({
+					url: '/user/review/modify',
+					headers: {
+						"Content-type" : "application/json", "X-HTTP-Method_Override" : "PATCH"
+						},
+					data: JSON.stringify(data),
+					dataType: 'text',
+					type: 'patch',
+					success: function(result) {
+						if(result =="success") {
+							alert("상품후기가 수정됨");
+							
+							//상품후기 목록
+							// reviewPage = 1; -> 1페이지가 아닌 수정한 댓글이 존재하는 페이지로 이동되어야 함
+							url = "/user/review/list/" + $("#p_num").val() + "/" + reviewPage;							
+							getPage(url);
+							
+
+							//상품후기 대화상자 숨김
+							$("#reviewModal").modal('hide');
+
+							$("#star_r_score a.r_score").parent().children().removeClass("on"); 
+							$("#r_content").val("");
+						}
+					}
+				});
+
+			});
+
+			//상품 후기 삭제 버튼 클릭 시 (후기 목록에서)
+			$("div#reviewListResult").on("click", "p a.deleteReview", function(e){
+				e.preventDefault();
+
+				console.log("삭제 버튼 클릭");
+				
+				if(!confirm("상품 후기를 삭제하시겠습니까?")) {
+					return;
+				}
+
+				let r_num = $(this).attr("href");
+
+				let data = { r_num:r_num };
+				//data라는 객체를 json문자열로 변환시켜야 함 -JSON.stringify(data)
+				$.ajax({
+					url: '/user/review/delete/' + r_num,
+					headers: {
+						"Content-type" : "application/json", "X-HTTP-Method_Override" : "DELETE"
+						},
+					//data: JSON.stringify(data), -> r_num을 파라미터값으로 주지 않고 ReviewVO 클래스 객체를 전부 가져와서 그 중 r_num을 필요로 할 때만 사용?
+					dataType: 'text',
+					type: 'DELETE',
+					success: function(result) {
+						if(result =="success") {
+							alert("상품후기가 삭제되었습니다.");
+							
+							//상품후기 목록
+							// reviewPage = 1; -> 1페이지가 아닌 수정한 댓글이 존재하는 페이지로 이동되어야 함
+							url = "/user/review/list/" + $("#p_num").val() + "/" + reviewPage;							
+							getPage(url);
+							
+							$("#star_r_score a.r_score").parent().children().removeClass("on"); 
+							$("#r_content").val("");
+						}
+					}
+				});
+			});
+
 		});
 
 		let reviewPage = 1;
@@ -361,7 +506,7 @@
 
 			let dateObj = new Date(timeValue);
 			let year = dateObj.getFullYear();
-			let month = dateObj.getMonth();
+			let month = dateObj.getMonth() + 1;
 			let date = dateObj.getDate();
 
 			return year + "/" + month + "/" + date;
@@ -374,14 +519,19 @@
 			switch(rating) {
 				case 1:
 					stars = "★☆☆☆☆";
+					break;
 				case 2:
 					stars = "★★☆☆☆";
+					break;
 				case 3:
 					stars = "★★★☆☆";
+					break;
 				case 4:
 					stars = "★★★★☆";
+					break;
 				case 5:
 					stars = "★★★★★";
+					break;
 			}
 
 			return stars;
@@ -390,6 +540,29 @@
 		//아이디 4글자만 보여주기
 		Handlebars.registerHelper("idDisplay", function(userid){
 			return userid.substring(0, 4) + "****";
+		});
+
+		//로그인 사용자와 댓글 작성자가 일치할 경우에만 수정버튼 표시하기
+		Handlebars.registerHelper("modifyReview", function(review_writer, r_num){
+			let result = "";
+			let login_m_userid = "${sessionScope.loginStatus.m_userid}";
+
+			if(review_writer == login_m_userid) {
+				result = "<a class='modifyReview' href='" + r_num + "'>[수정]</a>";
+			}
+
+			return new Handlebars.SafeString(result);
+		});
+		//로그인 사용자와 댓글 작성자가 일치할 경우에만 삭제버튼 표시하기
+		Handlebars.registerHelper("deleteReview", function(review_writer, r_num){
+			let result = "";
+			let login_m_userid = "${sessionScope.loginStatus.m_userid}";
+
+			if(review_writer == login_m_userid) {
+				result = "<a class='deleteReview' href='" + r_num + "'>[삭제]</a>";
+			}
+
+			return new Handlebars.SafeString(result);
 		});
 
 		//상품 후기 페이징 함수
@@ -423,10 +596,7 @@
 			target.children().remove();
 			target.html(pagingStr);
 
-		}
-
-		
-	
+		}	
 
 		//이전, 페이지 번호, 다음 클릭
 		$("nav ul#reviewPagingResult").on("click", "li a.page-link", function(e){
@@ -471,11 +641,14 @@
 		          <div class="form-group">
 		            <label for="r_content" class="col-form-label">리뷰내용:</label>
 		            <textarea class="form-control" id="r_content"></textarea>
+					<input type="hidden" name="r_num" id="r_num">
 		          </div>
 		        </form>
 		      </div>
 		      <div class="modal-footer">		        
 		        <button type="button" id="btnReviewWrite" class="btn btn-primary btnReview">상품 리뷰 저장</button>
+				<button type="button" id="btnRevieModify" class="btn btn-primary btnReview">상품 리뷰 수정</button>
+				<button type="button" id="btnReviewDelete" class="btn btn-primary btnReview">상품 리뷰 삭제</button>
 		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 		      </div>
 		    </div>
