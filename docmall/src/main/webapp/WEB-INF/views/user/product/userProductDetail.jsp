@@ -436,12 +436,12 @@
 					return;
 				}
 
-				let r_num = $(this).attr("href");
+				let r_num = $(this).attr("href"); //상품 후기 번호
 
-				let data = { r_num:r_num };
+				//let data = { r_num:r_num }; -> 얘도 필요 없음
 				//data라는 객체를 json문자열로 변환시켜야 함 -JSON.stringify(data)
 				$.ajax({
-					url: '/user/review/delete/' + r_num,
+					url: '/user/review/delete/' + r_num, //주소를 경로 형식을 사용
 					headers: {
 						"Content-type" : "application/json", "X-HTTP-Method_Override" : "DELETE"
 						},
