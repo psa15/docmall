@@ -54,69 +54,53 @@
 	<%@include file="/WEB-INF/views/include/categoryMenu.jsp" %>
 	
 	<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-	  <h1 class="display-4">CART</h1>
+	  <h1 class="display-4">ORDER LIST </h1>
 	</div>
 	
 	<div class="container">
+		
 		<div class="row">
 	      	<div class="col-md-12">      	
 	      		<div class="box box-primary">
 	      			<div class="box-header">
-	      				LIST CART     
+	      				LIST ORDER     
 	      			</div>	
 	      			<div class="box-body">	      				
 					  <table class="table table-hover" id="cartListResult">
 						  <thead>
 						    <tr>
-						      <th scope="col">제품</th>
+						      <th scope="col">상품</th>
 						      <th scope="col">수량</th>
-						      <th scope="col">배송비</th>
-						      <th scope="col">가격</th>						      
 						      <th scope="col">적립</th>
-						      <th scope="col">취소</th>
+						      <th scope="col">주문금액</th>
 						    </tr>
 						  </thead>
 						  <tbody>
-						  <c:forEach items="${cartList}" var="cartVO">
-						  <c:set var="price" value="${cartVO.cart_acount * cartVO.p_cost}"></c:set>
+						  <c:forEach items="${cartOrderList}" var="cartOrderInfo">
+						  <c:set var="price" value="${cartOrderInfo.cart_acount * cartOrderInfo.p_cost}"></c:set>
 						    <tr>	
 						      <!-- 제품 : 이미지 및 상품이름 -->				      
 						      <td>						      	
-						      	<a class="move" href="${cartVO.p_num}">
-						      		<img src="/user/product/displayFile?folderName=${cartVO.p_image_dateFolder}&fileName=s_${cartVO.p_image}" 
-						      		alt="" style="width: 80px; height: 80px" onerror="this.onerror=null; this.src='/image/no_image.png'">
-						      		<c:out value="${cartVO.p_name}" />
-						      	</a>
+						      	<a class="move" href="${cartOrderInfo.p_num}">
+						      		<img src="/user/order/displayFile?folderName=${cartOrderInfo.p_image_dateFolder}&fileName=s_${cartOrderInfo.p_image}" alt="" style="width: 80px; height: 80px" onerror="this.onerror=null; this.src='/image/no_image.png'">
+						      		<c:out value="${cartOrderInfo.p_name }"></c:out>						      								      		
+						      	</a>						      	
 						      </td>
 						      <!-- 수량 -->
 						      <td>
-						      	<input type="hidden" name="p_cost" value="${cartVO.p_cost}">
-						      	<input type="number" class="w-25" name="cart_acount" value='<c:out value="${cartVO.cart_acount}" />'>
-						      	<button type="button" name="btnCartAcountChange" data-cart_code="${cartVO.cart_code}" class="btn btn-link">수량변경</button>
-						 		<button type="button" name="btnCartAcountChange2" data-cart_code="${cartVO.cart_code}" class="btn btn-link">수량변경(AJAX X)</button>
+						      	<input type="hidden" name="p_cost" value="${cartOrderInfo.p_cost}">
+						      	<c:out value="${cartOrderInfo.cart_acount}" />개
 						      </td>
-						      <!-- 배송비 -->	
+						      <!-- 적립 	-->
 						      <td>
-						      	[기본배송]
-						      </td>	
-						      <!-- 가격 : 수량 * 하나가격 -->				      
+						      	<c:out value="${sessionScope.loginStatus.m_point}" />
+						      </td>
+						      <!-- 주문금액 -->				      
 						      <td>
 						      	<span class="unitPrice">						      	
 						      		<fmt:formatNumber type="number" maxFractionDigits="3" value="${price}" />
 						      	</span>
-						      </td>							  
-						      <!-- 적립 -->
-						      <td>
-						      	<c:out value="${cartVO.m_point}" />
-						      </td>
-						      <!-- 삭제 -->
-						      <td>
-			                    <input type="hidden" name="p_image_dateFolder" value="${cartVO.p_image_dateFolder}">
-			                    <input type="hidden" name="p_image" value="${cartVO.p_image}">
-			                    <button type="button" name="btnCartDelete" data-p_name="${cartVO.p_name}" data-cart_code="${cartVO.cart_code}" class="btn btn-link">삭제</button>
-			                    <a href="/user/cart/deleteCart?cart_code=${cartVO.cart_code}">Delete</a>
-			                  </td>
-						    </tr>
+						      </td>	
 						    <c:set var="sum" value="${sum + price}"></c:set>
 						   </c:forEach> 
 						   
@@ -124,24 +108,94 @@
 						  <tfoot>
 						  	<tr>
 						  		<%-- empty : 데이터가 존재하지 않으면 true, 존재하면 false --%>
-						  		<c:if test="${!empty cartList}">
-							  		<td colspan="6" style="text-align: right"> 
+						  		<c:if test="${!empty cartOrderList}">
+							  		<td colspan="4" style="text-align: right"> 
 							  			총 구매 금액: <span id="cartTotalPrice"><fmt:formatNumber type="number" maxFractionDigits="3" value="${sum}" /></span>
 							  		</td>
 						  		</c:if>
-						  		<c:if test="${empty cartList}">
-							  		<td colspan="6" style="text-align: center"> 
-							  			장바구니에 담긴 상품이 없습니다.
+						  		<c:if test="${empty cartOrderList}">
+							  		<td colspan="4" style="text-align: center"> 
+							  			주문내역 상품이 없습니다.
 							  		</td>
 						  		</c:if>
 						  	</tr>
 						  </tfoot>
 						</table>							
 	      			</div>
+	      			<div>
+	      				<form id="joinForm" method="post" action="join">
+	      				  <h5>주문자 정보</h5>
+	      				  <hr>
+						  <div class="form-group row">
+						    <label for="m_username" class="col-sm-2 col-form-label">이름</label>
+						    <div class="col-sm-10">
+						      <c:out value="${sessionScope.loginStatus.m_username}" />
+						    </div>
+						  </div>
+						  <div class="form-group row">
+						    <label for="m_email" class="col-sm-2 col-form-label">이메일</label>
+						    <div class="col-sm-10">
+						      <input type="text" class="form-control" name="m_email" value="${sessionScope.loginStatus.m_email}">
+						    </div>
+						  </div>
+						  <div class="form-group row">
+						    <label for="m_tel" class="col-sm-2 col-form-label">휴대폰 번호</label>
+						    <div class="col-sm-10">
+						      <input type="text" class="form-control" name="m_tel" value="${sessionScope.loginStatus.m_tel}">
+						    </div>
+						  </div>
+						  <hr>
+						  <h5>배송 정보</h5>
+	      				  <hr>
+						  <div class="form-group row">
+						    <label for="o_name" class="col-sm-2 col-form-label">이름</label>
+						    <div class="col-sm-10">
+						      <input type="text" class="form-control" id="o_name" name="o_name">
+						    </div>
+						  </div>
+						  <div class="form-group row">
+						    <label for="o_tel" class="col-sm-2 col-form-label">휴대폰 번호</label>
+						    <div class="col-sm-10">
+						      <input type="text" class="form-control" id="o_tel" name="o_tel">
+						    </div>
+						  </div>
+						  <div class="form-group row">
+						    <label for="m_tel" class="col-sm-2 col-form-label">배송지 선택</label>
+						    <div class="col-sm-10">
+						      배송지 작업
+						    </div>
+						  </div>
+						  <div class="form-group row">
+						    <label for="sample2_postcode" class="col-sm-2 col-form-label">우편번호</label>
+						    <div class="col-sm-10">
+						      <input type="text" class="form-control" id="sample2_postcode" name="o_post">
+						      <input type="button" onclick="sample2_execDaumPostcode()" value="우편번호 찾기">
+						    </div>
+						  </div>
+						  <div class="form-group row">
+						    <label for="sample2_address" class="col-sm-2 col-form-label">주소</label>
+						    <div class="col-sm-10">
+						      <input type="text" class="form-control" id="sample2_address" name="o_addr">
+						    </div>
+						  </div>
+						  <div class="form-group row">
+						    <label for="sample2_detailAddress" class="col-sm-2 col-form-label">상세주소</label>
+						    <div class="col-sm-10">
+						      <input type="text" class="form-control" id="sample2_detailAddress" name="o_addr_d">
+						      <input type="hidden" id="sample2_extraAddress" placeholder="참고항목">
+						    </div>
+						  </div>
+						  <div class="form-group row">
+						    <label for="m_tel" class="col-sm-2 col-form-label">배송지 메시지(100자 이내)</label>
+						    <div class="col-sm-10">
+						      	<textarea rows="3" cols="3"></textarea>
+						    </div>
+						  </div>		
+						</form>
+	      			</div>
 	      			<div class="box-footer text-center">
-	      				<button type="button" name="btnClearCart" class="btn btn-primary">장바구니 비우기</button>
-	      				<button type="button" name="btnShopping"  class="btn btn-primary">계속 쇼핑하기</button>
-	      				<button type="button" name="btnOrder" id="btnOrder"  class="btn btn-primary">주문하기</button>
+	      				<button type="button" id="btnCancelOrder"  class="btn btn-primary">주문 취소</button>
+	      				<button type="button" id="btnOrder"  class="btn btn-primary">주문하기</button>
 	      			</div>		
 	      		</div>     
 	      	</div>      
@@ -240,11 +294,6 @@
 				location.href ="/user/cart/clearCart"; //session정보에 아이디 정보가 있기 때문에 파라미터값이 필요 없음
 				$("tfoot tr").remove();
 				
-			});
-			
-			//주문하기 버튼 클릭
-			$("#btnOrder").on("click", function(){
-				location.href ="/user/order/orderListInfo";
 			});
 		});
 
