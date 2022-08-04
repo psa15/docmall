@@ -10,11 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.docmall.domain.CartOrderInfo;
 import com.docmall.domain.MemberVO;
+import com.docmall.domain.OrderVO;
 import com.docmall.service.OrderService;
 import com.docmall.util.UploadFileUtils;
 
@@ -60,5 +62,19 @@ public class OrderController {
 		
 		//이미지를 byte[]로 읽어오는 작업 - UploadFileUtils		
 		return UploadFileUtils.getFile(uploadPath, folderName + "\\" + fileName);
+	}
+	
+	//주문 저장하기
+	@PostMapping("/orderSave")
+	public String orderSave(OrderVO vo, HttpSession session) {
+		
+		log.info("주문 정보: " + vo);
+		
+		String m_userid = ((MemberVO) session.getAttribute("loginStatus")).getM_userid();
+		vo.setM_userid(m_userid);
+		
+		orderService.orderBuy(vo);
+		
+		return "redirect:/";
 	}
 }
