@@ -227,6 +227,19 @@
 				});
 			});
 			
+			//구매하기 버튼 클릭 시
+			$("#btnOrder").on("click", function(){
+				console.log("구매하기");
+
+				let p_num = $("#p_num").val(); //구매할 상품 코드
+				let cart_acount = $("#p_amount").val(); //구매 수량
+
+				//let ulr = "/user/order/orderListInfo?p_num=" + p_num + "&cart_acount=" + cart_acount + "&type=directOrder";
+				//console.log("직접구매 주소: " + url)
+				location.href = "/user/order/orderListInfo?p_num=" + p_num + "&cart_acount=" + cart_acount + "&type=directOrder";
+
+			});
+			
 
 			let searchForm = $("#searchForm");
 

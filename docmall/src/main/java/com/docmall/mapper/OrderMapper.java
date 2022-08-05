@@ -9,8 +9,10 @@ import com.docmall.domain.OrderVO;
 
 public interface OrderMapper {
 
-	//주문 폼 중 상품 목록
+	// 장바구니 주문 목록 : 장바구니 테이블의 상품 여러개
 	List<CartOrderInfo> cartOrderList(String m_userid);
+	//바로구매 주문 목록 : 상품 1개 여도 List를 씀 -> 모델에서 동일하게 사용하기 위해
+	List<CartOrderInfo> directOrderList(@Param("p_num") Integer p_num, @Param("o_amount") int o_amount);
 	
 	//주문 하기 기능 : 주문 테이블(insert), 주문 상세테이블(insert), 장바구니 테이블(delete)->CartMapper
 	//1)주문 테이블

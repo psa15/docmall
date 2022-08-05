@@ -12,11 +12,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.docmall.domain.CartOrderInfo;
+import com.docmall.domain.CartVO;
 import com.docmall.domain.MemberVO;
 import com.docmall.domain.OrderVO;
+import com.docmall.service.CartService;
 import com.docmall.service.OrderService;
 import com.docmall.util.UploadFileUtils;
 
@@ -34,20 +37,47 @@ public class OrderController {
 	@Setter(onMethod_ = {@Autowired})
 	private OrderService orderService;
 	
-	//주문 내역
+	@Setter(onMethod_ = {@Autowired})
+	private CartService cartService;
+	
+	/*
+	 주문 내역  
+	 1)장바구니에서 주문하기 
+	 2)상품리스트 팝업 대화상자->구매하기 
+	 -> 구분값 사용
+	 */
 	@GetMapping("/orderListInfo")
-	public void orderListInfo(HttpSession session, Model model) {
+	public void orderListInfo(HttpSession session, Model model,
+								@RequestParam("type") String type, @RequestParam(value = "p_num", required = false) Integer p_num, @RequestParam(value = "cart_acount", required = false) Integer o_amount ) {
 		
 		String m_userid = ((MemberVO) session.getAttribute("loginStatus")).getM_userid();
 		
-		List<CartOrderInfo> cartOrderList = orderService.cartOrderList(m_userid);
-		
-		for(int i=0; i<cartOrderList.size();i++) {
-			String p_image_folder = cartOrderList.get(i).getP_image_dateFolder().replace("\\", "/");
-			cartOrderList.get(i).setP_image_dateFolder(p_image_folder);
+		List<CartOrderInfo> orderList = null;
+				
+		if(type.equals("cartOrder")) {
+			//장바구니 구매	- String type 만 사용	
+			orderList = orderService.cartOrderList(m_userid);
+						
+		} else if(type.equals("directOrder")) {
+			//직접 구매 - String type, Integer p_num, int o_amount 전부 사용
+			orderList = orderService.directOrderList(p_num, o_amount);
+			//log.info("직접 구매: " + orderList);
+			
+			//직접 구매시 장바구니에 데이터 담기
+			CartVO vo = new CartVO();
+			vo.setCart_acount(o_amount);
+			vo.setM_userid(m_userid);
+			vo.setP_num(p_num);
+			cartService.addCart(vo);
+		}
+
+		for(int i=0; i<orderList.size();i++) {
+			String p_image_folder = orderList.get(i).getP_image_dateFolder().replace("\\", "/");
+			orderList.get(i).setP_image_dateFolder(p_image_folder);
 		}
 		
-		model.addAttribute("cartOrderList", cartOrderList);
+		model.addAttribute("cartOrderList", orderList);
+		
 		
 	}
 	

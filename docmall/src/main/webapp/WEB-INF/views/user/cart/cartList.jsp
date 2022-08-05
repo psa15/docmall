@@ -244,7 +244,8 @@
 			
 			//주문하기 버튼 클릭
 			$("#btnOrder").on("click", function(){
-				location.href ="/user/order/orderListInfo";
+				let type = "cartOrder";
+				location.href ="/user/order/orderListInfo?type=" + type;
 			});
 		});
 

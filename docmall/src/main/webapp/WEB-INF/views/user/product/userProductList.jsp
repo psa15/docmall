@@ -219,6 +219,18 @@
 				});
 			});
 
+			//BuyNow 버튼 클릭 시
+			$("button[name='btnModalBuy']").on("click", function(){
+
+				let p_num = $("div#modal_productDetail input#p_num").val(); //구매할 상품 코드
+				let cart_acount = $("div#modal_productDetail input#p_amount").val(); //구매 수량
+
+				//let ulr = "/user/order/orderListInfo?p_num=" + p_num + "&cart_acount=" + cart_acount + "&type=directOrder";
+				//console.log("직접구매 주소: " + url)
+				location.href = "/user/order/orderListInfo?p_num=" + p_num + "&cart_acount=" + cart_acount + "&type=directOrder";
+
+			});
+
 			//장바구니 담기
 			$("button[name='btnModalCart']").on("click", function(){
 
