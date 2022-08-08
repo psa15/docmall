@@ -19,6 +19,7 @@ import com.docmall.domain.CartOrderInfo;
 import com.docmall.domain.CartVO;
 import com.docmall.domain.MemberVO;
 import com.docmall.domain.OrderVO;
+import com.docmall.domain.PaymentVO;
 import com.docmall.service.CartService;
 import com.docmall.service.OrderService;
 import com.docmall.util.UploadFileUtils;
@@ -96,15 +97,29 @@ public class OrderController {
 	
 	//주문 저장하기
 	@PostMapping("/orderSave")
-	public String orderSave(OrderVO vo, HttpSession session) {
+	public String orderSave(OrderVO ordervo,PaymentVO payVO, HttpSession session) {
 		
-		log.info("주문 정보: " + vo);
+		log.info("주문 정보: " + ordervo);
+		log.info("결제 정보: " + payVO);
 		
 		String m_userid = ((MemberVO) session.getAttribute("loginStatus")).getM_userid();
-		vo.setM_userid(m_userid);
+		ordervo.setM_userid(m_userid);
 		
-		orderService.orderBuy(vo);
+		//무통장 입금일 경우
+		if(payVO.getPay_bank() != null) {
+			
+			ordervo.setPay_status("입금전");
+			payVO.setPate_tot_price(ordervo.getO_totalcost()); //실제 총 결제금액
+			payVO.setPay_rest_price(0);	//추가 입금 금액
+		}
 		
-		return "redirect:/";
+		orderService.orderBuy(ordervo, payVO);
+		
+		return "redirect:/user/order/orderComplete";
+	}
+	
+	@GetMapping("/orderComplete")
+	public void orderComplete() {
+		
 	}
 }

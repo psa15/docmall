@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.docmall.domain.CartOrderInfo;
 import com.docmall.domain.OrderVO;
+import com.docmall.domain.PaymentVO;
 
 public interface OrderService {
 
@@ -14,5 +15,5 @@ public interface OrderService {
 	
 	
 	//주문 하기 기능 : 주문 테이블(insert), 주문 상세테이블(insert), 장바구니 테이블(delete)->CartMapper
-	void orderBuy(OrderVO vo);
+	void orderBuy(OrderVO vo, PaymentVO payVO);
 }

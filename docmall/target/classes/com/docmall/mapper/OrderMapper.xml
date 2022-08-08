@@ -44,9 +44,9 @@
 		
 		INSERT INTO 
 			TBL_ORDER
-				(O_CODE, M_USERID, O_NAME, O_POST, O_ADDR, O_ADDR_D, O_TEL, O_TOTALCOST, O_MESSAGE) 
+				(O_CODE, M_USERID, O_NAME, O_POST, O_ADDR, O_ADDR_D, O_TEL, O_TOTALCOST, O_MESSAGE, PAY_STATUS) 
 			VALUES
-				(#{o_code}, #{m_userid}, #{o_name}, #{o_post}, #{o_addr}, #{o_addr_d}, #{o_tel}, #{o_totalcost}, #{o_message})
+				(#{o_code}, #{m_userid}, #{o_name}, #{o_post}, #{o_addr}, #{o_addr_d}, #{o_tel}, #{o_totalcost}, #{o_message}, #{pay_status})
 				
 	</insert>
 	
@@ -63,6 +63,21 @@
 	        	C.P_NUM = P.P_NUM
 	        WHERE 
 	        	M_USERID = #{m_userid}
+	
+	</insert>
+	
+	<!-- 결제정보 저장 -->
+	<insert id="paymentSave">
+	
+		INSERT INTO
+			PAYMENT_TBL
+				(PAY_CODE, O_CODE, PAY_METHOD, 
+				PAY_DATE, PATE_TOT_PRICE, PAY_REST_PRICE, 
+				PAY_PRICE, PAY_USER, PAY_BANK)
+			VALUES
+				(SEQ_PAYMENT_CODE.nextval, #{o_code}, #{pay_method}, 
+				sysdate, #{pate_tot_price}, #{pay_rest_price}, 
+				#{pay_price}, #{pay_user}, #{pay_bank})
 	
 	</insert>
 

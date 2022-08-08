@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.docmall.domain.CartOrderInfo;
 import com.docmall.domain.OrderVO;
+import com.docmall.domain.PaymentVO;
 
 public interface OrderMapper {
 
@@ -19,5 +20,6 @@ public interface OrderMapper {
 	void orderSave(OrderVO vo); //o_code필드가 시퀀스의 값으로 채워짐
 	//2)주문 상세테이블
 	void orderDetailSave(@Param("o_code") Long o_code, @Param("m_userid") String m_userid);
-	
+	//3) 결제정보 저장
+	void paymentSave(PaymentVO payVO);
 }

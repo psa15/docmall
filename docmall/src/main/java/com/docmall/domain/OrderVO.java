@@ -19,4 +19,8 @@ public class OrderVO {
 	private int o_totalcost; //
 	private Date o_date; //sysdate
 	private String o_message;
+	
+	private String o_status;
+	private String pay_status;
+	private String cs_status;
 }

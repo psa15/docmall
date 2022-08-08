@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.docmall.domain.CartOrderInfo;
 import com.docmall.domain.OrderVO;
+import com.docmall.domain.PaymentVO;
 import com.docmall.mapper.CartMapper;
 import com.docmall.mapper.OrderMapper;
 
@@ -40,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
 	//주문 하기 기능 : 주문 테이블(insert), 주문 상세테이블(insert), 장바구니 테이블(delete)->CartMapper
 	@Transactional
 	@Override
-	public void orderBuy(OrderVO vo) {
+	public void orderBuy(OrderVO vo, PaymentVO payVO) {
 		
 		//1)주문 테이블
 		orderMapper.orderSave(vo);
@@ -57,6 +58,10 @@ public class OrderServiceImpl implements OrderService {
 		//3)장바구니비우기 - CartMapper에 만들어져있는 메소드 재사용
 		//직접 구매 진행 시 장바구니에 데이터가 존재하지 않아 실행은 되지만 삭제되는 데이터가 없다.
 		cartMapper.clearCart(m_userid);
+		
+		//4)결제 정보 저장하기
+		payVO.setO_code(o_code);
+		orderMapper.paymentSave(payVO);
 	}
 
 
