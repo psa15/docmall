@@ -21,6 +21,7 @@ import com.docmall.domain.MemberVO;
 import com.docmall.domain.OrderVO;
 import com.docmall.domain.PaymentVO;
 import com.docmall.service.CartService;
+import com.docmall.service.KakaoPayServiceImpl;
 import com.docmall.service.OrderService;
 import com.docmall.util.UploadFileUtils;
 
@@ -40,6 +41,9 @@ public class OrderController {
 	
 	@Setter(onMethod_ = {@Autowired})
 	private CartService cartService;
+	
+	@Setter(onMethod_ = {@Autowired})
+	private KakaoPayServiceImpl kakaopayService;
 	
 	/*
 	 주문 내역  
@@ -97,6 +101,37 @@ public class OrderController {
 	
 	//주문 저장하기
 	@PostMapping("/orderSave")
+	public String orderSave(OrderVO ordervo,PaymentVO payVO, String type, HttpSession session) {
+		
+		log.info("주문 정보: " + ordervo);
+		log.info("결제 정보: " + payVO);
+		
+		String m_userid = ((MemberVO) session.getAttribute("loginStatus")).getM_userid();
+		ordervo.setM_userid(m_userid);
+		
+		//1)무통장 입금일 경우
+		if(type.equals("무통장")) {
+			
+			ordervo.setPay_status("입금전");
+			payVO.setPate_tot_price(ordervo.getO_totalcost()); //실제 총 결제금액
+			payVO.setPay_rest_price(0);	//추가 입금 금액
+		}
+		
+		/*
+		 * //2)카카오 페이 결제일 경우 if(type.equals("카카오페이")) {
+		 * 
+		 * ordervo.setPay_status("입금전");
+		 * payVO.setPate_tot_price(ordervo.getO_totalcost()); //실제 총 결제금액
+		 * payVO.setPay_rest_price(0); //추가 입금 금액 }
+		 */
+		
+		orderService.orderBuy(ordervo, payVO);
+		
+		return "redirect:/user/order/orderComplete";
+	}
+	
+	//카카오결제
+	@PostMapping("/orderPay")
 	public String orderSave(OrderVO ordervo,PaymentVO payVO, HttpSession session) {
 		
 		log.info("주문 정보: " + ordervo);
@@ -105,13 +140,12 @@ public class OrderController {
 		String m_userid = ((MemberVO) session.getAttribute("loginStatus")).getM_userid();
 		ordervo.setM_userid(m_userid);
 		
-		//무통장 입금일 경우
-		if(payVO.getPay_bank() != null) {
-			
-			ordervo.setPay_status("입금전");
-			payVO.setPate_tot_price(ordervo.getO_totalcost()); //실제 총 결제금액
-			payVO.setPay_rest_price(0);	//추가 입금 금액
-		}
+		
+		//카카오 페이 결제일 경우
+		ordervo.setPay_status("입금전");
+		payVO.setPate_tot_price(ordervo.getO_totalcost()); //실제 총 결제금액
+		payVO.setPay_rest_price(0);	//추가 입금 금액
+		
 		
 		orderService.orderBuy(ordervo, payVO);
 		

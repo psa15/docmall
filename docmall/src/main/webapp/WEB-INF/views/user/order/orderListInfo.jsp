@@ -233,6 +233,7 @@
 	      			</div>
 	      			<div class="box-footer text-center">
 	      				<button type="button" id="btnCancelOrder"  class="btn btn-primary">주문 취소</button>
+	      				<img id="kakao_pay" alt="kakaoPay" src="/image/payment_icon_yellow_medium.png" style="display: none;">
 	      				<button type="button" id="btnOrder"  class="btn btn-primary">주문하기</button>
 	      			</div>		
 	      		</div>     
@@ -278,15 +279,30 @@
 				}
 			});
 
-			//결제
+			//결제 방법 선택
 			$("#pay_method").on("change", function(){
-				if($("#pay_method").val() =="") {
+				if($("#pay_method:selected").val() =="") {
 					alert("결제 방법을 선택하세요");
+					return;
+				}
+
+				//카카오 페이 선택 시
+				if($("#pay_method:selected").val() =="카카오 페이") {
+					alert("카카오페이 이미지를 클릭하세요");
+					$("#kakao_pay").style("display", "inline");
 					return;
 				}
 
 			});
 
+			//카카오페이 버튼 클릭(ajax구문으로 사용해야 함)
+			$("img#kakao_pay").on("click", function(){
+
+				$("#orderForm").attr("action", "/user/order/orderPay");
+				$("#orderForm").submit();
+			});
+
+			//무통장 입금 시 은행 선택
 			$("#bank").on("change", function(){
 				if($("#bank").val() =="") {
 					alert("입금 은행을 선택하세요");
@@ -304,7 +320,7 @@
 				//유효성 검사
 
 
-				$("#orderForm").attr("action", "/user/order/orderSave");
+				$("#orderForm").attr("action", "/user/order/orderSave?type=무통장");
 				alert("주문이 완료되었습니다.");
 				$("#orderForm").submit();
 			});
