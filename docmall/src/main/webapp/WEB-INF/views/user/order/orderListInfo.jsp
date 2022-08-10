@@ -311,17 +311,17 @@
 				//적립금
 				//쿠폰
 
-				$.ajax ({
+				$.ajax({
 					url: '/user/order/orderPay',
 					type: 'get',
 					data: {
-						//자바스크립트 Object 구문으로 저송
 						totalAmount : o_totalcost
 					},
 					success: function(response) {
-						alert(response.tid);
+						//alert(response.next_redirect_pc_url);
 						location.href = response.next_redirect_pc_url;
 					}
+
 				});
 			});
 

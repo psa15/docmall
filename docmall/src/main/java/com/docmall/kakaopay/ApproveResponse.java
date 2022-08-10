@@ -23,6 +23,5 @@ public class ApproveResponse {
 	private String approved_at;
 	private String payload;
 	
-	private Amount amout;
-	
+	private Amount amount;
 }
