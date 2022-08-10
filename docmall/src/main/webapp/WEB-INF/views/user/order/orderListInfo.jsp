@@ -281,15 +281,15 @@
 
 			//결제 방법 선택
 			$("#pay_method").on("change", function(){
-				if($("#pay_method:selected").val() =="") {
+				if($("#pay_method option:selected").val() =="") {
 					alert("결제 방법을 선택하세요");
 					return;
 				}
 
 				//카카오 페이 선택 시
-				if($("#pay_method:selected").val() =="카카오 페이") {
+				if($("#pay_method option:selected").val() =="카카오 페이") {
 					alert("카카오페이 이미지를 클릭하세요");
-					$("#kakao_pay").style("display", "inline");
+					$("#kakao_pay").attr("style", "display:inline;");
 					return;
 				}
 
@@ -298,13 +298,36 @@
 			//카카오페이 버튼 클릭(ajax구문으로 사용해야 함)
 			$("img#kakao_pay").on("click", function(){
 
-				$("#orderForm").attr("action", "/user/order/orderPay");
-				$("#orderForm").submit();
+				//카카오 페이에서 요청하는 필수 입력값 확보
+				
+				//주문자				
+				let o_name = $("input[name='o_name']").val();
+				//연락처
+				let o_tel = $("input[name='o_tel']").val();
+				//전자우편
+				let m_email = $("input[name='m_email']").val();
+				//전체금액
+				let o_totalcost = $("input[name='o_totalcost']").val();
+				//적립금
+				//쿠폰
+
+				$.ajax ({
+					url: '/user/order/orderPay',
+					type: 'get',
+					data: {
+						//자바스크립트 Object 구문으로 저송
+						totalAmount : o_totalcost
+					},
+					success: function(response) {
+						alert(response.tid);
+						location.href = response.next_redirect_pc_url;
+					}
+				});
 			});
 
 			//무통장 입금 시 은행 선택
 			$("#bank").on("change", function(){
-				if($("#bank").val() =="") {
+				if($("#bank option:selected").val() =="") {
 					alert("입금 은행을 선택하세요");
 					return;
 				}

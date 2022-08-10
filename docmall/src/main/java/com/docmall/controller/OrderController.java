@@ -17,9 +17,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.docmall.domain.CartOrderInfo;
 import com.docmall.domain.CartVO;
+import com.docmall.domain.CartVOList;
 import com.docmall.domain.MemberVO;
 import com.docmall.domain.OrderVO;
 import com.docmall.domain.PaymentVO;
+import com.docmall.kakaopay.ApproveResponse;
+import com.docmall.kakaopay.ReadyResponse;
 import com.docmall.service.CartService;
 import com.docmall.service.KakaoPayServiceImpl;
 import com.docmall.service.OrderService;
@@ -130,24 +133,29 @@ public class OrderController {
 		return "redirect:/user/order/orderComplete";
 	}
 	
-	//카카오결제
-	@PostMapping("/orderPay")
-	public String orderSave(OrderVO ordervo,PaymentVO payVO, HttpSession session) {
+	//카카오페이 결제요청 - 바로구매는 에러
+	@GetMapping("/orderPay")
+	public @ResponseBody ReadyResponse payReady(int totalAmount, /*OrderVO orderVO,  PaymentVO payVO, */ HttpSession session) {
 		
-		log.info("주문 정보: " + ordervo);
-		log.info("결제 정보: " + payVO);
-		
+		//장바구니에서 상품에서 (상품명, 상품 코드, 수량, 상품가격*단위별 금액)
 		String m_userid = ((MemberVO) session.getAttribute("loginStatus")).getM_userid();
-		ordervo.setM_userid(m_userid);
+		List<CartVOList> orderList = cartService.getCartList(m_userid);
+		String itemName = orderList.get(0).getP_name() + "외 " + (orderList.size() - 1) + "개";
+		int quantity = orderList.size() - 1; 
 		
+		ReadyResponse readyResponse = kakaopayService.payReady(itemName, quantity, m_userid, totalAmount);	
 		
-		//카카오 페이 결제일 경우
-		ordervo.setPay_status("입금전");
-		payVO.setPate_tot_price(ordervo.getO_totalcost()); //실제 총 결제금액
-		payVO.setPay_rest_price(0);	//추가 입금 금액
+		return readyResponse;
+	}
+	
+	//카카오페이 결제 승인 요청 : 큐알코드 찍어 결제 요청 한 후 카카오페이 서버에서 결제가 성공적으로 끝나면, 카카오페이 서버에서 호출하는 주소
+	@GetMapping("/orderApproval")
+	public String orderApproval(String pgToken, String tid){
 		
+		log.info("결제 고유 번호: " + tid);
+		log.info("결제 승인 요청 인증 토큰: " + pgToken);
 		
-		orderService.orderBuy(ordervo, payVO);
+		ApproveResponse approveResponse = kakaopayService.payApprove(tid, pgToken);
 		
 		return "redirect:/user/order/orderComplete";
 	}

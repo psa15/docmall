@@ -7,6 +7,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.docmall.domain.OrderVO;
 import com.docmall.kakaopay.ApproveResponse;
 import com.docmall.kakaopay.ReadyResponse;
 
@@ -19,11 +20,11 @@ import lombok.extern.log4j.Log4j;
 public class KakaoPayServiceImpl {
 
 	//1) 카카오 pay에서 요청하는 정보
-	public ReadyResponse payReady(int totalAmount) {
+	public ReadyResponse payReady(String itemName,int quantity, String m_userid, int totalAmount) {
 		
 		String order_id = "100";
-		String itemName = "테스트 상품";
-		int quantity = 1;
+//		String itemName = "테스트 상품";
+//		int quantity = 1;
 		
 		//카카오페이가 요청한 결제요청 request 정보를 구성
 		//MultiValueMap : 키 하나 당 값 여러개 갖는 구조의 스프링 프레임워크에서 제공하는 map
@@ -31,13 +32,13 @@ public class KakaoPayServiceImpl {
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
 		
 		parameters.add("cid", "TC0ONETIME"); //테스트 가맹점 아이디
-		parameters.add("partner_order_id", order_id); //가맹점 주문번호
-		parameters.add("partner_user_id", "doccomsa"); //가맹점 회원 id
-		parameters.add("item_name", itemName ); //상품명
+		parameters.add("partner_order_id", order_id); //가맹점 주문번호 = 고객 주문번호
+		parameters.add("partner_user_id", m_userid); //가맹점 회원 id
+		parameters.add("item_name", itemName ); //상품명 cf 000상품 외 2건
 		parameters.add("quantity", String.valueOf(quantity)); //상품 수량
 		parameters.add("total_amount", String.valueOf(totalAmount)); //상품 총액
 		parameters.add("tax_free_amount", "0"); //상품 비과세 금액
-		parameters.add("approval_url", "http://localhost:9090/user/order/orderComplete"); //결제 성공시 redirect url
+		parameters.add("approval_url", "http://localhost:9090/user/order/orderApproval"); //결제 성공시 redirect url
 		parameters.add("cancel_url", "http://localhost:9090/user/order/orderCancel"); //결제 취소시
 		parameters.add("fail_url", "http://localhost:9090/user/order/orderFail"); //결제 실패시 redirect url
 		
@@ -92,7 +93,7 @@ public class KakaoPayServiceImpl {
 	//2) kakaopay request Headers정보 - 결제 준비 및 결제 요청에서 사용되는 공통 메소드
 	private HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "KakaoAK 64834f0334712f7693de92c18bc246d8");
+		headers.set("Authorization", "KakaoAK ");
 		headers.set("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 		
 		return headers;
