@@ -135,7 +135,7 @@ public class OrderController {
 	
 	//카카오페이 결제요청. 바로구매는 에러발생된다.
 	@GetMapping("/orderPay")
-	public @ResponseBody ReadyResponse payReady(/*OrderVO o_vo,  PaymentVO p_vo,*/int totalAmount, HttpSession session, Model model) {
+	public @ResponseBody ReadyResponse payReady(OrderVO ordervo, PaymentVO payVO, int totalAmount, HttpSession session, Model model) {
 		
 		//장바구니테이블에서 상품정보(상품명, 상품코드, 수량, 상품가격*수량=단위별 금액)
 		String m_userid = ((MemberVO) session.getAttribute("loginStatus")).getM_userid();
@@ -151,7 +151,11 @@ public class OrderController {
 		//model.addAttribute("tid", readyResponse.getTid());
 		
 		session.setAttribute("tid", readyResponse.getTid());
-		log.info("결제고유번호: " + readyResponse.getTid());
+		log.info("결제고유번호1: " + readyResponse.getTid());
+		
+		ordervo.setM_userid(m_userid);
+		session.setAttribute("order", ordervo);
+		session.setAttribute("payment", payVO);
 		
 		return readyResponse;
 	}
@@ -159,18 +163,27 @@ public class OrderController {
 	
 	//결제승인요청 : 큐알코드를 찍고(결제요청) 카카오페이 서버에서 결제가 성공적으로 끝나면, 카카오페이 서버에서 호출하는 주소
 	@GetMapping("/orderApproval")
-	public String orderApproval(@RequestParam("pg_token") String pgToken, /*, @ModelAttribute("tid") String tid, OrderVO o_vo*/ HttpSession session ) {
+	public String orderApproval(@RequestParam("pg_token") String pgToken, /*, @ModelAttribute("tid") String tid, */ HttpSession session ) {
 		
 		log.info("결제 승인요청 인증토큰: " + pgToken);
 		//log.info("주문정보: " + o_vo);
 		
 		String tid = (String) session.getAttribute("tid");
+		OrderVO orderVO = (OrderVO) session.getAttribute("order");
+		PaymentVO payVO = (PaymentVO) session.getAttribute("payment");
 		
-		log.info("결제고유번호: " + tid);
+		session.removeAttribute("tid"); //세션 제거 - 반드시 처리! 로그인 상태에서 세션정보가 필요하지 않게되면 불필요하게 서버측의 메모리를 사용하게 됨
+		session.removeAttribute("order");
+		session.removeAttribute("payment");
+		
+		log.info("결제 고유번호2: " + tid);
 		
 		//카카오페이 결제하기
 		ApproveResponse approveResponse =kakaopayService.payApprove(tid, pgToken);
-
+		log.info("appreveResponse: " + approveResponse);
+		
+		orderService.orderBuy(orderVO, payVO);
+		
 		return "redirect:/user/order/orderComplete";
 	}
 		

@@ -72,12 +72,18 @@
 		INSERT INTO
 			PAYMENT_TBL
 				(PAY_CODE, O_CODE, PAY_METHOD, 
-				PAY_DATE, PATE_TOT_PRICE, PAY_REST_PRICE, 
-				PAY_PRICE, PAY_USER, PAY_BANK)
+				PAY_DATE, PATE_TOT_PRICE, PAY_REST_PRICE
+				<if test="pay_user != NULL and !pay_user.equals('')">
+					, PAY_PRICE, PAY_USER, PAY_BANK
+				</if>
+				)
 			VALUES
 				(SEQ_PAYMENT_CODE.nextval, #{o_code}, #{pay_method}, 
-				sysdate, #{pate_tot_price}, #{pay_rest_price}, 
-				#{pay_price}, #{pay_user}, #{pay_bank})
+				sysdate, #{pate_tot_price}, #{pay_rest_price}
+				<if test="pay_user != NULL and !pay_user.equals('')">
+					, #{pay_price}, #{pay_user}, #{pay_bank}
+				</if>
+				)
 	
 	</insert>
 

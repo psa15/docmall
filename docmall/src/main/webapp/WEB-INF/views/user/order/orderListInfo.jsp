@@ -279,6 +279,7 @@
 				}
 			});
 
+			let pay_method;
 			//결제 방법 선택
 			$("#pay_method").on("change", function(){
 				if($("#pay_method option:selected").val() =="") {
@@ -289,6 +290,10 @@
 				//카카오 페이 선택 시
 				if($("#pay_method option:selected").val() =="카카오 페이") {
 					alert("카카오페이 이미지를 클릭하세요");
+
+					//ajax구문에서 카카오페이라는 값을 pay_method로 보내주기 위해
+					pay_method = $("#pay_method option:selected").val();
+
 					$("#kakao_pay").attr("style", "display:inline;");
 					return;
 				}
@@ -315,7 +320,22 @@
 					url: '/user/order/orderPay',
 					type: 'get',
 					data: {
-						totalAmount : o_totalcost
+						totalAmount : o_totalcost,
+
+						o_name : o_name,
+						o_post : $("input[name='s_o_post']").val(),
+						o_addr : $("input[name='s_o_addr']").val(),
+						o_addr_d : $("input[name='s_o_addr_d']").val(),
+						o_tel : o_tel,
+						o_totalcost : o_totalcost,
+						o_message : $("textarea[name='o_message']").val(),
+						pay_status : '결제완료',
+
+						pay_method : pay_method,
+						pate_tot_price : o_totalcost,
+
+
+
 					},
 					success: function(response) {
 						//alert(response.next_redirect_pc_url);
