@@ -233,7 +233,7 @@
 	      			</div>
 	      			<div class="box-footer text-center">
 	      				<button type="button" id="btnCancelOrder"  class="btn btn-primary">주문 취소</button>
-	      				<img id="kakao_pay" alt="kakaoPay" src="/image/payment_icon_yellow_medium.png" style="display: none;">
+	      				<input type="image" id="kakao_pay" src="/image/payment_icon_yellow_medium.png" class="btn btn-link" disabled>
 	      				<button type="button" id="btnOrder"  class="btn btn-primary">주문하기</button>
 	      			</div>		
 	      		</div>     
@@ -287,6 +287,9 @@
 					return;
 				}
 
+				$("#btnOrder").attr("disabled", false); //활성화
+				$("input#kakao_pay").attr("disabled", true); //비활성화
+
 				//카카오 페이 선택 시
 				if($("#pay_method option:selected").val() =="카카오 페이") {
 					alert("카카오페이 이미지를 클릭하세요");
@@ -294,15 +297,17 @@
 					//ajax구문에서 카카오페이라는 값을 pay_method로 보내주기 위해
 					pay_method = $("#pay_method option:selected").val();
 
-					$("#kakao_pay").attr("style", "display:inline;");
+					$("#btnOrder").attr("disabled", true); //일반 주문하기 비활성화
+					$("input#kakao_pay").attr("disabled", false); //카카오페이 활성화
 					return;
 				}
 
 			});
 
 			//카카오페이 버튼 클릭(ajax구문으로 사용해야 함)
-			$("img#kakao_pay").on("click", function(){
-
+			$("input#kakao_pay").on("click", function(e){
+				e.preventDefault();
+				
 				//카카오 페이에서 요청하는 필수 입력값 확보
 				
 				//주문자				

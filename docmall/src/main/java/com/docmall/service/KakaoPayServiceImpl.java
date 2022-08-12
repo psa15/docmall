@@ -10,11 +10,8 @@ import org.springframework.web.client.RestTemplate;
 import com.docmall.kakaopay.ApproveResponse;
 import com.docmall.kakaopay.ReadyResponse;
 
-import lombok.extern.log4j.Log4j;
-
 //인터페이스 없이 단독 클래스 구성.
 
-@Log4j
 @Service
 public class KakaoPayServiceImpl {
 
@@ -70,7 +67,10 @@ public class KakaoPayServiceImpl {
 	
 	
 	// 두번째 요청 : 결제 승인요청 메서드
-	public ApproveResponse payApprove(String tid, String pgToken) {
+	public ApproveResponse payApprove(String tid, String pgToken, String mem_id) {
+		
+		System.out.println(tid);
+		System.out.println(pgToken);
 		
 		String order_id = "100";
 		
@@ -78,7 +78,7 @@ public class KakaoPayServiceImpl {
 		parameters.add("cid", "TC0ONETIME"); // 테스트 가맹점ID
 		parameters.add("tid", tid); // 카카오 페이에서 보내준 결재고유 ID
 		parameters.add("partner_order_id", order_id); // 주문번호
-		parameters.add("partner_user_id", "doccomsa"); // 주문자
+		parameters.add("partner_user_id", mem_id); // 주문자id - 결제요청시 보낸 아이디와 같아야 함
 		parameters.add("pg_token", pgToken); // 
 		
 		HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
@@ -99,7 +99,7 @@ public class KakaoPayServiceImpl {
 	// Kakao Pay request의 두번사용시 공통 Header정보 설정.
 	private HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "KakaoAK 64834f0334712f7693de92c18bc246d8");
+		headers.set("Authorization", "KakaoAK ");
 		headers.set("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 		
 		return headers;

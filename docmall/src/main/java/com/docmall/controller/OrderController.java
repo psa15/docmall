@@ -135,55 +135,62 @@ public class OrderController {
 	
 	//카카오페이 결제요청. 바로구매는 에러발생된다.
 	@GetMapping("/orderPay")
-	public @ResponseBody ReadyResponse payReady(OrderVO ordervo, PaymentVO payVO, int totalAmount, HttpSession session, Model model) {
+	public @ResponseBody ReadyResponse payReady(OrderVO o_vo,  PaymentVO p_vo, int totalAmount, HttpSession session, Model model) {
 		
 		//장바구니테이블에서 상품정보(상품명, 상품코드, 수량, 상품가격*수량=단위별 금액)
-		String m_userid = ((MemberVO) session.getAttribute("loginStatus")).getM_userid();
+		String mem_id = ((MemberVO) session.getAttribute("loginStatus")).getM_userid();
 		//장바구니에서 주문이 진행될 때
-		List<CartVOList> cartList = cartService.getCartList(m_userid);
+		List<CartVOList> cartList = cartService.getCartList(mem_id);
 		String itemName = cartList.get(0).getP_name() + "외 " + String.valueOf(cartList.size() - 1) + " 개";
 		int quantity = cartList.size() - 1;
 		
 		
-		// 카카오페이서버에서 보낸온 정보.
-		ReadyResponse readyResponse = kakaopayService.payReady(itemName, quantity, m_userid, totalAmount);
+		// 카카오페이서버에서 보낸온 정보. (1차 준비 요청 -> QR코드 주소 리턴)
+		ReadyResponse readyResponse = kakaopayService.payReady(itemName, quantity, mem_id, totalAmount);
 		
 		//model.addAttribute("tid", readyResponse.getTid());
 		
 		session.setAttribute("tid", readyResponse.getTid());
-		log.info("결제고유번호1: " + readyResponse.getTid());
+		o_vo.setM_userid(mem_id);
+		session.setAttribute("order", o_vo);
+		session.setAttribute("payment", p_vo);
 		
-		ordervo.setM_userid(m_userid);
-		session.setAttribute("order", ordervo);
-		session.setAttribute("payment", payVO);
 		
+		
+		//log.info("결제고유번호1: " + readyResponse.getTid());
+			
 		return readyResponse;
 	}
 	
 	
 	//결제승인요청 : 큐알코드를 찍고(결제요청) 카카오페이 서버에서 결제가 성공적으로 끝나면, 카카오페이 서버에서 호출하는 주소
 	@GetMapping("/orderApproval")
-	public String orderApproval(@RequestParam("pg_token") String pgToken, /*, @ModelAttribute("tid") String tid, */ HttpSession session ) {
+	public String orderApproval(@RequestParam("pg_token") String pgToken, HttpSession session ) {
 		
 		log.info("결제 승인요청 인증토큰: " + pgToken);
 		//log.info("주문정보: " + o_vo);
 		
+		String mem_id = ((MemberVO) session.getAttribute("loginStatus")).getM_userid();
 		String tid = (String) session.getAttribute("tid");
-		OrderVO orderVO = (OrderVO) session.getAttribute("order");
-		PaymentVO payVO = (PaymentVO) session.getAttribute("payment");
+		OrderVO o_vo = (OrderVO) session.getAttribute("order"); 
+		PaymentVO p_vo = (PaymentVO )session.getAttribute("payment");
 		
-		session.removeAttribute("tid"); //세션 제거 - 반드시 처리! 로그인 상태에서 세션정보가 필요하지 않게되면 불필요하게 서버측의 메모리를 사용하게 됨
+		log.info("결제정보: " + p_vo);
+		
+		session.removeAttribute("tid"); //세션제거. 반드시 처리할 것. 로그인 상태에서 세션정보가 필요하지 않게되면, 불필요하게 서버측의 메모리를 사용하고 있게된다.
 		session.removeAttribute("order");
 		session.removeAttribute("payment");
 		
-		log.info("결제 고유번호2: " + tid);
+		log.info("결제고유번호2: " + tid);
 		
-		//카카오페이 결제하기
-		ApproveResponse approveResponse =kakaopayService.payApprove(tid, pgToken);
-		log.info("appreveResponse: " + approveResponse);
+		//카카오페이 결제하기 (2차 요청)
+		ApproveResponse approveResponse =kakaopayService.payApprove(tid, pgToken,mem_id);
+		log.info("approveResponse: " + approveResponse);
 		
-		orderService.orderBuy(orderVO, payVO);
+		//카카오페이 결제정보 db저장 : approveResponse 제외.
 		
+		orderService.orderBuy(o_vo, p_vo);
+
 		return "redirect:/user/order/orderComplete";
 	}
 		
