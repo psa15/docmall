@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.mapper.AdOrderMapper">
+
+	<!-- 관리자 주문목록 -->
+	<!-- 검색 조건 쿼리 -->
+	<sql id="criteria">
+		<trim prefix="(" suffix=") AND " prefixOverrides="OR"><!-- serffix 공백 주의 -->
+			<foreach collection="typeArr" item="type">
+			 	<trim prefix="OR">
+			 		<choose>
+			 			<!-- 주문번호 : O_CODE -->
+			 			<when test="type == 'O'.toString()">
+			 				O_CODE LIKE '%' || #{keyword} || '%'
+			 			</when>
+			 			<!-- 어아디 : M_USERID -->
+			 			<when test="type == 'I'.toString()">
+			 				M_USERID LIKE '%' || #{keyword} || '%'
+			 			</when>
+			 		</choose>
+			 	</trim>
+			</foreach>		
+		</trim>
+	</sql>
+	<!-- 주문목록 : 페이징 쿼리(인덱스 힌트 구문 사용) -->
+	<select id="getOrderList" resultType="com.docmall.domain.OrderVO">
+		<![CDATA[
+		SELECT 
+			RN, O_CODE, M_USERID, O_NAME, O_POST, O_ADDR, O_ADDR_D, O_TEL, 
+		    	O_TOTALCOST, O_DATE, O_MESSAGE, O_STATUS, PAY_STATUS, CS_STATUS 
+		FROM(
+		    SELECT 
+		    	/*+ INDEX_DESC(TBL_ORDER PK_T_ORDER) */ 
+		    	ROWNUM RN, O_CODE, M_USERID, O_NAME, O_POST, O_ADDR, O_ADDR_D, O_TEL, 
+		    	O_TOTALCOST, O_DATE, O_MESSAGE, O_STATUS, PAY_STATUS, CS_STATUS 
+		    FROM 
+				TBL_ORDER
+		    WHERE
+		]]>
+				<include refid="criteria"></include>
+				<!-- <![CDATA[ ]]> 안에 들어가면 태그가 아닌 문자열로 읽게 됨 -->
+		<![CDATA[
+			 ROWNUM <= #{pageNum} * #{amount}
+		)
+		WHERE RN > (#{pageNum}-1) * #{amount}	
+		]]>
+	</select>
+	
+	<!-- 상품 목록 개수 : 페이징 구현 사용 -->
+	<select id="totalOrderCount" resultType="int">
+		SELECT 
+			COUNT(*) 
+		FROM 
+			TBL_ORDER
+		WHERE
+			<include refid="criteria"></include>
+			O_CODE > 0		
+	</select>
+	
+	<!-- 주문상태 변경 -->
+	<update id="updateOrderStatus">
+	
+		UPDATE
+			TBL_ORDER
+		SET
+			O_STATUS = #{o_status}
+		WHERE
+			O_CODE = #{o_code}
+	
+	</update>
+	
+	<!-- 주문 삭제 -->
+	<delete id="deleteOrder">
+		DELETE
+			TBL_ORDER
+		WHERE
+			O_CODE = #{o_code}
+	</delete>
+	
+	<!-- 주문 삭제
+	collection="list"
+	 - 파라미터 데이터타입이 List 컬렉션이기 때문에 사용
+	item="o_code"
+	 - oCodeArr 배열 중 값 하나씩을 의미하는 변수명
+	파라미터가 Map컬렉션일 경우 
+	
+	 -->
+	<delete id="deleteListOrder">
+		DELETE
+			TBL_ORDER
+		WHERE
+			O_CODE IN
+			<foreach collection="list" item = "o_code" open="(" close=")" separator=",">
+				#{o_code}
+			</foreach>
+	</delete>
+	
+</mapper>
