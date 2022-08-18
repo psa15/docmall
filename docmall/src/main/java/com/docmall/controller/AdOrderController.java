@@ -31,13 +31,23 @@ public class AdOrderController {
 	
 	//주문 목록
 	@GetMapping("/orderList")
-	public void orderList(Criteria cri, Model model) {
+	public void orderList(Criteria cri, Model model, 
+							@RequestParam(value="startDate", required = false) String startDate,
+							@RequestParam(value="endDate", required = false) String endDate) {
 		
-		List<OrderVO> orderList = adOrderService.getOrderList(cri);
+		
+		log.info(startDate);
+		log.info(endDate);
+		
+		List<OrderVO> orderList = adOrderService.getOrderList(cri, startDate, endDate);
 		model.addAttribute("orderList", orderList);
-		
-		int total = adOrderService.totalOrderCount(cri);
+				
+		int total = adOrderService.totalOrderCount(cri, startDate, endDate);
 		model.addAttribute("pageMaker", new PageDTO(cri, total));
+		
+		//검색한 값이 남게
+		model.addAttribute("startDate", startDate);
+		model.addAttribute("endDate", endDate);
 	}
 	
 	//배송 상태 변경
@@ -80,12 +90,26 @@ public class AdOrderController {
 		 방법2) 쿼리로 생성
 		 delete 주문테이블 where 주문번호 in (x, y, z,,,,,)
 		 */
-		
+		adOrderService.deleteListOrder(oCodeArr);
 		
 		
 		entity = new ResponseEntity<String>("success", HttpStatus.OK);
 		
 		return entity;
+	}
+	
+	//주문 상세
+	@GetMapping("/orderDetail")
+	public void orderDetail(Long o_code, Model model) {
+		log.info(o_code);
+		
+		//주문 정보
+		model.addAttribute("orderInfo", adOrderService.getOrderInfo(o_code));
+		
+		//결제정보
+		model.addAttribute("paymentInfo", adOrderService.getPaymentInfo(o_code));
+		
+		//주문 상품 정보
 	}
 
 }

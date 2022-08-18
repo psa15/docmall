@@ -6,22 +6,39 @@
 	<!-- 검색 조건 쿼리 -->
 	<sql id="criteria">
 		<trim prefix="(" suffix=") AND " prefixOverrides="OR"><!-- serffix 공백 주의 -->
-			<foreach collection="typeArr" item="type">
+			<foreach collection="cri.typeArr" item="type">
 			 	<trim prefix="OR">
 			 		<choose>
 			 			<!-- 주문번호 : O_CODE -->
 			 			<when test="type == 'O'.toString()">
-			 				O_CODE LIKE '%' || #{keyword} || '%'
+			 				O_CODE LIKE '%' || #{cri.keyword} || '%'
 			 			</when>
 			 			<!-- 어아디 : M_USERID -->
 			 			<when test="type == 'I'.toString()">
-			 				M_USERID LIKE '%' || #{keyword} || '%'
+			 				M_USERID LIKE '%' || #{cri.keyword} || '%'
 			 			</when>
 			 		</choose>
 			 	</trim>
 			</foreach>		
 		</trim>
 	</sql>
+	
+	<!-- 날짜 조건 쿼리 -->
+	<sql id="period">
+		<!-- 
+		startDate와 endDate가 존재하면
+		TO_DATE : 오라클db의 변환 함수
+		 -->
+		<if test="startDate != null and !startDate.equals('') and endDate != null and !endDate.equals('')">
+		<![CDATA[
+			O_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+			AND
+			O_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+			AND
+		]]>
+		</if>
+	</sql>
+	
 	<!-- 주문목록 : 페이징 쿼리(인덱스 힌트 구문 사용) -->
 	<select id="getOrderList" resultType="com.docmall.domain.OrderVO">
 		<![CDATA[
@@ -37,12 +54,14 @@
 				TBL_ORDER
 		    WHERE
 		]]>
+				<include refid="period"></include>
+				
 				<include refid="criteria"></include>
 				<!-- <![CDATA[ ]]> 안에 들어가면 태그가 아닌 문자열로 읽게 됨 -->
 		<![CDATA[
-			 ROWNUM <= #{pageNum} * #{amount}
+			 ROWNUM <= #{cri.pageNum} * #{cri.amount}
 		)
-		WHERE RN > (#{pageNum}-1) * #{amount}	
+		WHERE RN > (#{cri.pageNum}-1) * #{cri.amount}	
 		]]>
 	</select>
 	
@@ -53,6 +72,8 @@
 		FROM 
 			TBL_ORDER
 		WHERE
+			<include refid="period"></include>
+			
 			<include refid="criteria"></include>
 			O_CODE > 0		
 	</select>
@@ -83,7 +104,9 @@
 	item="o_code"
 	 - oCodeArr 배열 중 값 하나씩을 의미하는 변수명
 	파라미터가 Map컬렉션일 경우 
-	
+	 - HashMap<String, Object> map = new HashMap();
+	 - map.put("checkList", ckList)
+	 - <foreach> 문에 collection="checkList"
 	 -->
 	<delete id="deleteListOrder">
 		DELETE
@@ -94,5 +117,34 @@
 				#{o_code}
 			</foreach>
 	</delete>
+	
+	<!-- 주문 상세 - 주문 정보 -->
+	<select id="getOrderInfo" resultType="com.docmall.domain.OrderVO">
+	
+		SELECT
+			 O_CODE, M_USERID, O_NAME, O_TEL,
+			 O_POST, O_ADDR, O_ADDR_D, 
+			 O_TOTALCOST, O_DATE, O_MESSAGE, 
+			 O_STATUS, PAY_STATUS, CS_STATUS
+		FROM
+			TBL_ORDER 
+		WHERE 
+			O_CODE = #{o_code}
+	
+	</select>
+	
+	<!-- 주문 상세 - 결제 정보 -->
+	<select id="getPaymentInfo" resultType="com.docmall.domain.PaymentVO">
+	
+		SELECT
+			PAY_CODE, O_CODE, PAY_METHOD, PAY_DATE, 
+			PATE_TOT_PRICE, PAY_REST_PRICE, 
+			PAY_PRICE, PAY_USER, PAY_BANK
+		FROM
+			PAYMENT_TBL
+		WHERE
+			O_CODE = #{o_code}
+			
+	</select>
 	
 </mapper>

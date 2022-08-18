@@ -69,115 +69,80 @@ desired effect
       	<div class="col-md-12">      	
       		<div class="box box-primary">
       			<div class="box-header">
-      				LIST ORDER     
+      				LIST ORDER DETAIL    
       			</div>	
       			<div class="box-body">
-      				<form id="searchForm" action="/admin/order/orderList" method="get">
-					  <%-- 검색 단추를 누르면 - pageNum은 1로 돌아가게  --%>
-					    <select name="type" id="selectType">
-							 <option value="" <c:out value="${pageMaker.cri.type == null ? 'selected' : ''}" />>--</option> 
-							 <option value="O" <c:out value="${pageMaker.cri.type eq 'O' ? 'selected' : ''}" />>주문번호</option>
-							 <option value="I" <c:out value="${pageMaker.cri.type eq 'I' ? 'selected' : ''}" />>주문자 아이디</option>
-					  	</select>
-					  	<input type="text" id="keywordTag" name="keyword" value="${pageMaker.cri.keyword}">
-					  	<input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
-					  	<input type="hidden" name="amount" value="${pageMaker.cri.amount}">
-					  	
-					  	주문 일자 <input type="date" name="startDate" value="${startDate }"> ~ <input type="date" name="endDate" value="${endDate }">
-					  	<button type="button" id="btnSearch" class="btn btn-info">Search</button>
-					  </form>
-					  <button type="button" name="btnDeleteCheck" class="btn btn-link">선택 삭제(체크 확인)</button>
+      			<h3>주문 상세 조회</h3>
+      			
+      			  <h5>주문 정보</h5>
+				  <table class="table table-bordered">
+					  <thead>
+					    <tr>
+					      <th scope="col">주문번호</th>
+					      <td scope="col">${orderInfo.o_code}</td>
+					    </tr>
+					  </thead>
+					  <tbody>
+					    <tr>
+					      <th scope="col">주문일자</th>
+					      <td scope="col"><fmt:formatDate value="${orderInfo.o_date}" pattern="yyyy-MM-dd hh:mm:ss"/></td>
+					    </tr>
+					    <tr>
+					      <th scope="col">주문자</th>
+					      <td scope="col">${orderInfo.o_name}</td>
+					    </tr>
+					    <tr>
+					      <th scope="col">주문 처리 상태</th>
+					      <td scope="col">${orderInfo.o_status}</td>
+					    </tr>
+					  </tbody>
+					</table>
 					
-					
-					  <table class="table table-hover">
+					<h5>결제 정보</h5>
+					  <table class="table table-bordered">
 						  <thead>
 						    <tr>
-						      <th scope="col"><input type="checkbox" id="checkAll" name="checkAll"></th>
-						      <th scope="col">주문 번호</th>
-						      <th scope="col">주문일시</th>
-						      <th scope="col">수령인 / 주문자 아이디 </th>
-						      <th scope="col">주문금액 / 배송비</th>
-						      <th scope="col">결제 상태</th>
-						      <th scope="col">배송 상태</th>
-						      <th scope="col">주문 관리</th>
+						      <th scope="col">총 주문 금액</th>
+						      <td scope="col">${paymentInfo.pate_tot_price}</td>
 						    </tr>
 						  </thead>
 						  <tbody>
-						  <c:forEach items="${orderList}" var="ordertVO">
 						    <tr>
-						      <!-- 비고 -->
-						      <td scope="row"><input type="checkbox" class="check" value="${ordertVO.o_code }"></td>	
-						      <!-- 주문 번호 -->
-						      <td><c:out value="${ordertVO.o_code}" /></td>
-						      <!-- 주문일시 -->				      
-						      <td>
-						      	<fmt:formatDate value="${ordertVO.o_date}" pattern="yyyy-MM-dd hh:mm:ss"/>
-						      </td>							  
-						      <!-- 수령인 / 주문자 아이디 -->
-						      <td><c:out value="${ordertVO.o_name}" /> / <c:out value="${ordertVO.m_userid}" /></td>
-						      <!-- 주문금액 / 배송비 -->
-						      <td><c:out value="${ordertVO.o_totalcost}"/></td>
-						      <!-- 결제 상태 -->
-						      <td><c:out value="${ordertVO.pay_status}" /></td>
-						      <!-- 배송상태 -->
-						      <td>
-						      	<select class="form-control" id="o_status" name="o_status">
-							      <option value="주문접수"${ordertVO.o_status eq '주문접수' ? 'selected' : ''}>주문접수</option>
-							      <option value="배송준비중"${ordertVO.o_status eq '배송준비중' ? 'selected' : ''}>배송 준비 중</option>
-							      <option value="배송보류"${ordertVO.o_status eq '배송보류' ? 'selected' : ''}>배송 보류</option>
-							      <option value="배송대기"${ordertVO.o_status eq '배송대기' ? 'selected' : ''}>배송 대기</option>
-							      <option value="배송중"${ordertVO.o_status eq '배송중' ? 'selected' : ''}>배송 중</option>
-							      <option value="배송완료"${ordertVO.o_status eq '배송완료' ? 'selected' : ''}>배송 완료</option>
-							      <option value="주문취소"${ordertVO.o_status eq '주문취소' ? 'selected' : ''}>주문 취소</option>
-							      <option value="취소요청"${ordertVO.o_status eq '취소요청' ? 'selected' : ''}>취소 요청</option>
-							      <option value="취소완료"${ordertVO.o_status eq '취소완료' ? 'selected' : ''}>취소 완료</option>
-							      <option value="교환요청"${ordertVO.o_status eq '교환요청' ? 'selected' : ''}>교환 요청</option>
-							      <option value="교환완료"${ordertVO.o_status eq '교환완료' ? 'selected' : ''}>교환 완료</option>
-							    </select>
-							    <button type="button" name="btnChangeOrderStatus" data-o_code="${ordertVO.o_code }" class="btn btn-link">변경</button>
-						      </td>
-						      <!-- 주문 관리 -->						      
-						      <td><button type="button" name="btnOrderDetail" data-o_code="${ordertVO.o_code}" class="btn btn-link">주문 상세</button></td>
-						      
-						     </tr>
-						   </c:forEach> 
-						   
+						      <th scope="col">총 결제 금액</th>
+						      <td scope="col">${paymentInfo.pate_tot_price}</td>
+						    </tr>
+						    <tr>
+						      <th scope="col">결제 수단</th>
+						      <td scope="col">${paymentInfo.pay_method}</td>
+						    </tr>
 						  </tbody>
 						</table>
-						<nav aria-label="...">
-						  <ul class="pagination justify-content-center">
-						  
-						  	<%-- 이전표시 --%>
-						  	<c:if test="${pageMaker.prev}">
-							    <li class="page-item">
-							      <a class="page-link" href="${pageMaker.startPage-1}">이전</a>
-							    </li>
-						    </c:if>
-						    
-						    <%-- 페이지 번호 표시 ( 1 2 3 4 5) --%>
-						    <c:forEach begin="${pageMaker.startPage}" end="${pageMaker.endPage}" var="num">
-						    	<li class='page-item ${pageMaker.cri.pageNum == num ? "active" : ""}'><a class="page-link" href="${num}">${num}</a></li>
-						    </c:forEach>
 						
-						    
-						    <%-- 다음표시 --%>
-						    <c:if test="${pageMaker.next}">
-							    <li class="page-item">
-							      <a class="page-link" href="${pageMaker.endPage +1}">다음</a>
-							    </li>
-						    </c:if>   
-						  </ul>
-						  <form id="actionForm" action="/admin/order/orderList" method="get">
-								<%-- 페이지 번호 클릭시 list주소로 보낼 파라미터 작업 - model 덕분에 ${pageMaker.cri.___} 사용 가능 --%>
-								<input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
-								<input type="hidden" name="amount" value="${pageMaker.cri.amount}">
-								<input type="hidden" name="type" value="${pageMaker.cri.type}">
-								<input type="hidden" name="keyword" value="${pageMaker.cri.keyword}">
-                <input type="hidden" name="startDate" value="${startDate}">
-                <input type="hidden" name="endDate" value="${endDate}">
-								<%-- 한 번 검색하면 list()메소드에 Criteria cri 에 값이 들어가게 되어 위 사용 가능 --%>
-							</form>
-						</nav>
+						<h5>주문 상품 정보</h5>
+							<table class="table table-bordered">
+						  <thead>
+						    <tr>
+						      <th scope="col">이미지</th>
+						      <th scope="col">상품 정보</th>
+						      <th scope="col">수량</th>
+						      <th scope="col">상품 금액</th>
+						      <th scope="col">배송 구분</th>
+						      <th scope="col">주문 처리 상태</th>
+						      <th scope="col">취소/교환/반품</th>
+						    </tr>
+						  </thead>
+						  <tbody>
+						    <tr>
+						      <td scope="col">First</td>
+						      <td scope="col">First</td>
+						      <td scope="col">First</td>
+						      <td scope="col">First</td>
+						      <td scope="col">First</td>
+						      <td scope="col">First</td>
+						      <td scope="col">First</td>
+						    </tr>
+						  </tbody>
+						</table>					
       			</div>		
       		</div>     
       	</div>      
@@ -373,15 +338,17 @@ desired effect
           //actionForm 참조 (상품 수정, 상품 삭제, 페이지 번호)
           let actionForm = $("#actionForm");
 
-          //주문 상세 버튼 클릭
-          $("button[name='btnOrderDetail']").on("click", function(){
+          //상품 수정 버튼 클릭 시
+          $("button[name='btnProductEdit']").on("click", function(){
 
-            console.log("주문번호: " + $(this).data("o_code"));
+            //상품 목록 중 선택한 목록
+            console.log("상품코드: " + $(this).data("p_num"));
+
             //상품코드를 자식으로 추가
-            actionForm.append("<input type='hidden' name='o_code' value='" + $(this).data("o_code") + "'>");
+            actionForm.append("<input type='hidden' name='p_num' value='" + $(this).data("p_num") + "'>");
             
             //폼태그 주소 변경
-            actionForm.attr("action", "/admin/order/orderDetail");
+            actionForm.attr("action", "/admin/product/productModify");
 
             actionForm.submit();
 

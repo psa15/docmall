@@ -359,6 +359,7 @@ desired effect
             actionForm.submit();
           });
           
+          //판매여부에 따른 input태그
           $("#selectType").change(function(){
 
               let result = $("#selectType option:selected").val();
