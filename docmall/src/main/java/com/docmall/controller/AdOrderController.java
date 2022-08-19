@@ -1,6 +1,9 @@
 package com.docmall.controller;
 
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import com.docmall.domain.OrderVO;
 import com.docmall.dto.Criteria;
 import com.docmall.dto.PageDTO;
 import com.docmall.service.AdOrderService;
+import com.docmall.util.UploadFileUtils;
 
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -25,6 +29,9 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 @RequestMapping("/admin/order/*")
 public class AdOrderController {
+	
+	@Resource(name = "uploadPath") 
+	private String uploadPath;
 	
 	@Setter(onMethod_ = {@Autowired})
 	private AdOrderService adOrderService;
@@ -110,6 +117,30 @@ public class AdOrderController {
 		model.addAttribute("paymentInfo", adOrderService.getPaymentInfo(o_code));
 		
 		//주문 상품 정보
+		List<Map<String, Object>> orderProdcuctListMap = adOrderService.getOrderProductInfo(o_code);
+		
+		for(int i=0; i<orderProdcuctListMap.size();i++) {
+			
+			Map<String, Object> orderProduct = orderProdcuctListMap.get(i);
+			
+			String imageFolder = String.valueOf(orderProduct.get("P_IMAGE_DATEFOLDER")).replace("\\", "/");
+			//값이 Object기 때문에 String으로 변경해줌
+			orderProduct.put("P_IMAGE_DATEFOLDER", imageFolder);
+		}
+		model.addAttribute("orderProductMap", orderProdcuctListMap);
+	}
+	
+	//상품 목록에서 이미지 보여주기
+	@ResponseBody
+	@GetMapping("/displayFile")
+	public ResponseEntity<byte[]> displayFile(String folderName, String fileName){
+		//String fileName : jsp 페이지에 뿌려진 날짜 폴더와 이미지 이름이 합쳐져서 들어올 예정
+		
+		log.info("폴더이름: " + folderName);
+		log.info("파일이름: " + fileName);
+		
+		//이미지를 byte[]로 읽어오는 작업 - UploadFileUtils		
+		return UploadFileUtils.getFile(uploadPath, folderName + "\\" + fileName);
 	}
 
 }

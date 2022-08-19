@@ -1,6 +1,7 @@
 package com.docmall.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,12 @@ public class AdOrderServiceImpl implements AdOrderService {
 	@Override
 	public PaymentVO getPaymentInfo(Long o_code) {
 		return adOrderMapper.getPaymentInfo(o_code);
+	}
+	
+	//주문 상세 - 주문 상품 정보
+	@Override
+	public List<Map<String, Object>> getOrderProductInfo(Long o_code) {
+		return adOrderMapper.getOrderProductInfo(o_code);
 	}
 
 }

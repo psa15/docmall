@@ -74,7 +74,7 @@ desired effect
       			<div class="box-body">
       			<h3>주문 상세 조회</h3>
       			
-      			  <h5>주문 정보</h5>
+      			  <h5 style="color:red; font-weight:bold">주문 정보</h5>
 				  <table class="table table-bordered">
 					  <thead>
 					    <tr>
@@ -98,7 +98,7 @@ desired effect
 					  </tbody>
 					</table>
 					
-					<h5>결제 정보</h5>
+					<h5 style="color:red; font-weight:bold">결제 정보</h5>
 					  <table class="table table-bordered">
 						  <thead>
 						    <tr>
@@ -118,29 +118,38 @@ desired effect
 						  </tbody>
 						</table>
 						
-						<h5>주문 상품 정보</h5>
+						<h5 style="color:red; font-weight:bold">주문 상품 정보</h5>
 							<table class="table table-bordered">
 						  <thead>
+						  <!--  -->
 						    <tr>
 						      <th scope="col">이미지</th>
 						      <th scope="col">상품 정보</th>
 						      <th scope="col">수량</th>
 						      <th scope="col">상품 금액</th>
-						      <th scope="col">배송 구분</th>
 						      <th scope="col">주문 처리 상태</th>
 						      <th scope="col">취소/교환/반품</th>
 						    </tr>
 						  </thead>
 						  <tbody>
-						    <tr>
-						      <td scope="col">First</td>
-						      <td scope="col">First</td>
-						      <td scope="col">First</td>
-						      <td scope="col">First</td>
-						      <td scope="col">First</td>
-						      <td scope="col">First</td>
-						      <td scope="col">First</td>
-						    </tr>
+						  	<c:forEach items="${orderProductMap }" var="orderProduct">
+							    <tr>
+							    <!-- MAP의 키를 대문자로 입력 -->
+							      
+							      <td scope="col">
+								      <img src="/admin/product/displayFile?folderName=${orderProduct.P_IMAGE_DATEFOLDER }&fileName=s_${orderProduct.P_IMAGE }" 
+							      		alt="" style="width: 80px; height: 80px" onerror="this.onerror=null; this.src='/image/no_image.png'">
+							      		 
+							      </td>
+							      <td scope="col">${orderProduct.P_NAME}</td>
+							      <td scope="col">${orderProduct.O_AMOUNT}</td>
+							      <td scope="col">${orderProduct.O_UNITPRICE}</td>
+							      <td scope="col">${orderProduct.O_STATUS}</td>
+							      <td scope="col">
+							      	<button type="button" id="btnCancelProduct" class="btn btn-link">취소</button>
+							      </td>
+							    </tr>
+						    </c:forEach>
 						  </tbody>
 						</table>					
       			</div>		

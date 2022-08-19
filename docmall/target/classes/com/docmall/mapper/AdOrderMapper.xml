@@ -147,4 +147,40 @@
 			
 	</select>
 	
+	<!-- 주문 상세 - 주문 상품 정보 -->
+	<!-- resultType사용 -->
+	<select id="getOrderProductInfo" resultType="map">
+	
+		SELECT
+			P.P_DETAIL, P.P_NAME,  P.P_IMAGE, P.P_IMAGE_DATEFOLDER, D.O_AMOUNT, P.P_COST * D.O_AMOUNT AS O_UNITPRICE, 
+			O.O_STATUS
+		FROM 
+			TBL_ORDER O INNER JOIN TBL_ORDER_D D
+		    ON O.O_CODE = D.O_CODE
+		    INNER JOIN TBL_PRODUCT P
+		    ON D.P_NUM = P.P_NUM
+		WHERE 
+			O.O_CODE =#{o_code} 
+	
+	</select>
+	
+	<!-- db의 컬럼명과 vo클래스의 필드명이 불일치할 경우 : 1) 쿼리에 as 별칭 사용 2)resultType사용
+	<resultMap type="vo클래스명" id="getOrderProductMap">
+		<result column="테이블 컬럼명" property="vo클래스  필드명"/>
+	</resultMap>
+	<select id="getOrderProductInfo" resultType="map" resultMap="getOrderProductMap">
+	
+		SELECT
+			P.P_DETAIL, P.P_NAME,  P.P_IMAGE, P.P_IMAGE_DATEFOLDER, D.O_AMOUNT, P.P_COST * D.O_AMOUNT AS O_UNITPRICE, 
+			O.O_STATUS
+		FROM 
+			TBL_ORDER O INNER JOIN TBL_ORDER_D D
+		    ON O.O_CODE = D.O_CODE
+		    INNER JOIN TBL_PRODUCT P
+		    ON D.P_NUM = P.P_NUM
+		WHERE 
+			O.O_CODE =#{o_code} 
+	
+	</select>
+	 -->
 </mapper>
