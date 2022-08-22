@@ -146,7 +146,7 @@ desired effect
 							      <td scope="col">${orderProduct.O_UNITPRICE}</td>
 							      <td scope="col">${orderProduct.O_STATUS}</td>
 							      <td scope="col">
-							      	<button type="button" id="btnCancelProduct" class="btn btn-link">취소</button>
+							      	<button type="button" name="btnCancelProduct" 	data-o_unitprice="${orderProduct.O_UNITPRICE}" data-o_code="${orderProduct.O_CODE}" data-p_num="${orderProduct.P_NUM}" class="btn btn-link">취소</button>
 							      </td>
 							    </tr>
 						    </c:forEach>
@@ -258,26 +258,27 @@ desired effect
         $(document).ready(function(){
 
           //주문 상태 변경 작업
-          $("button[name='btnChangeOrderStatus']").on("click", function(){
-            //console.log("변경 버튼 클릭");
-
-            //주문 번호, 선택한 배송상태 값
+          $("button[name='btnCancelProduct']").on("click", function(){
+            
             let o_code = $(this).data("o_code");
-            let o_status = $(this).parent().find("select#o_status option:selected").val();
-
-            // console.log("주문 번호: " + o_code + " 배송상태: " + o_status);
-
-            $.ajax({
-              url: '/admin/order/orderStatusChange',
+            let p_num = $(this).data("p_num");
+            let o_unitprice = $(this).data("o_unitprice");
+            
+            if(!confrim("주문 취소 하겠습니까")) return;
+            
+            location.href="/admin/order/orderUnitProductCancel?o_code=" + o_code + "&p_num=" + p_num + "&o_unitprice=" + o_unitprice;
+            
+           /*  $.ajax({
+              url: '/admin/order/orderUnitProductCancel',
               method: 'get',
-              data: {o_code : o_code, o_status : o_status},
+              data: {o_code : o_code, p_num : p_num},
               dataType: 'text',
               success: function(result) {
                 if(result == "success"){
                   alert("배송 상태가 변경 되었습니다.")
                 }
               }
-            });
+            }); */
           });
 
           //체크박스 전체선택(제목 행 체크박스)

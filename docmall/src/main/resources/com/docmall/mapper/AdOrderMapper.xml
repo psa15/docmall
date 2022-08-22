@@ -152,7 +152,7 @@
 	<select id="getOrderProductInfo" resultType="map">
 	
 		SELECT
-			P.P_DETAIL, P.P_NAME,  P.P_IMAGE, P.P_IMAGE_DATEFOLDER, D.O_AMOUNT, P.P_COST * D.O_AMOUNT AS O_UNITPRICE, 
+			P.P_DETAIL, P.P_NAME, D.O_CODE, D.P_NUM,  P.P_IMAGE, P.P_IMAGE_DATEFOLDER, D.O_AMOUNT, P.P_COST * D.O_AMOUNT AS O_UNITPRICE, 
 			O.O_STATUS
 		FROM 
 			TBL_ORDER O INNER JOIN TBL_ORDER_D D
@@ -183,4 +183,34 @@
 	
 	</select>
 	 -->
+	 
+	 <!-- 주문상품 개별 취소 기능 -->
+	 <delete id="orderDetailProductDelete">
+	 
+	 	DELETE
+	 		TBL_ORDER_D
+	 	WHERE
+	 		O_CODE = #{o_code} AND P_NUM = #{p_num}
+	 
+	 </delete>
+	 <update id="orderTotalPriceChange">
+	 	
+	 	UPDATE
+	 		TBL_ORDER
+	 	SET
+	 		O_TOTALCOST = O_TOTALCOST - #{o_unitprice}
+	 	WHERE
+	 		O_CODE = #{o_code}
+	 
+	 </update>
+	 <update id="paymentTotalPriceChange">
+	 
+	 	UPDATE
+	 		PAYMENT_TBL
+	 	SET
+	 		PATE_TOT_PRICE = PATE_TOT_PRICE - #{o_unitprice}
+	 	WHERE
+	 		O_CODE = #{o_code}
+	 
+	 </update>
 </mapper>

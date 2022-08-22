@@ -33,5 +33,13 @@ public interface AdOrderMapper {
 	//주문 상세 - 주문 상품 정보
 	List<Map<String, Object>> getOrderProductInfo(Long o_code);
 	
+	//주문 상품 개별 취소
+	//1)주문상세테이블 데이터 삭제
+	void orderDetailProductDelete(@Param("o_code") Long o_code, @Param("p_num") Integer p_num); 
+	//2)주문테이블 가격 수정
+	void orderTotalPriceChange(@Param("o_code") Long o_code, @Param("o_unitprice") int o_unitprice);
+	//3)결제테이블 결제 금액 수정
+	void paymentTotalPriceChange(@Param("o_code") Long o_code, @Param("o_unitprice") int o_unitprice);
+	
 }
 	

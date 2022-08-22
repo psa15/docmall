@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.docmall.domain.OrderVO;
 import com.docmall.domain.PaymentVO;
@@ -64,6 +65,17 @@ public class AdOrderServiceImpl implements AdOrderService {
 	@Override
 	public List<Map<String, Object>> getOrderProductInfo(Long o_code) {
 		return adOrderMapper.getOrderProductInfo(o_code);
+	}
+	
+	//주문 상품 개별 삭제
+	@Transactional
+	@Override
+	public void orderUnitProductDelete(Long o_code, Integer p_num, int o_unitprice) {
+		
+		adOrderMapper.orderDetailProductDelete(o_code, p_num);
+		adOrderMapper.orderTotalPriceChange(o_code, o_unitprice);
+		adOrderMapper.paymentTotalPriceChange(o_code, o_unitprice);
+		
 	}
 
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.docmall.domain.OrderVO;
 import com.docmall.dto.Criteria;
@@ -141,6 +142,17 @@ public class AdOrderController {
 		
 		//이미지를 byte[]로 읽어오는 작업 - UploadFileUtils		
 		return UploadFileUtils.getFile(uploadPath, folderName + "\\" + fileName);
+	}
+	
+	//주문 상품 개별 취소 기능 - 페이징, 검색 정보는 제외
+	@GetMapping("/orderUnitProductCancel")
+	public String orderUnitProductCancel(Long o_code, Integer p_num, RedirectAttributes rttr, int o_unitprice) {
+		
+		adOrderService.orderUnitProductDelete(o_code, p_num, o_unitprice);
+		
+		rttr.addFlashAttribute("o_code", o_code);
+		
+		return "redirect:/admin/order/orderDetail";
 	}
 
 }

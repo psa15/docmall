@@ -3,6 +3,8 @@ package com.docmall.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.docmall.domain.OrderVO;
 import com.docmall.domain.PaymentVO;
 import com.docmall.dto.Criteria;
@@ -29,4 +31,7 @@ public interface AdOrderService {
 	PaymentVO getPaymentInfo(Long o_code);
 	//주문 상세 - 주문 상품 정보
 	List<Map<String, Object>> getOrderProductInfo(Long o_code);
+	
+	//주문 상품 개별 취소
+	void orderUnitProductDelete(Long o_code, Integer p_num, int o_unitprice);
 }
