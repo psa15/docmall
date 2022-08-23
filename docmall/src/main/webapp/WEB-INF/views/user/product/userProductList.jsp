@@ -217,6 +217,7 @@
 					//console.log(imgUrl);
 					$("div#modal_productDetail img#modal_detail_image").attr("src", imgUrl);
 				});
+
 			});
 
 			//BuyNow 버튼 클릭 시
@@ -283,11 +284,15 @@
 				actionForm.attr("method", "get");
 				actionForm.attr("action", "/user/product/userProductDetail");
 
+				//동적으로 추가한 상품 번호를 다시 삭제해주어야 뒤로가기 버튼 클릭 시 상품 번호가 계속 남아있지 않음
+				actionForm.find("input[name='p_num']").remove();
+
 				actionForm.append("<input type='hidden' name='p_num' value='" + p_num + "'>");
 				
 				//카테고리코드와 이름 가져오기
 				
 				actionForm.submit();
+
 			});
 	
 		});

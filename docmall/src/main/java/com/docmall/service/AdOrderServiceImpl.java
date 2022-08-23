@@ -38,9 +38,19 @@ public class AdOrderServiceImpl implements AdOrderService {
 	}
 	
 	//선택한 주문 목록 삭제
+	@Transactional
 	@Override
 	public void deleteOrder(Long o_code) {
+		
+		//주문 삭제 기능 : 관련된 작업 모두 삭제, 트랙잭션 설정
+		//주문 테이블 삭제(처리)
 		adOrderMapper.deleteOrder(o_code);
+		
+		//아래는 트리거에서 처리도 가능
+		//주문 상세 테이블 삭제
+		
+		//결제 테이블 삭제
+		
 	}
 	
 	//선택한 주문 목록 삭제 - 쿼리 사용
@@ -71,9 +81,25 @@ public class AdOrderServiceImpl implements AdOrderService {
 	@Transactional
 	@Override
 	public void orderUnitProductDelete(Long o_code, Integer p_num, int o_unitprice) {
+		//테이블의 조건식에 일치하는 데이터가 존재하지 않아도 정상 실행됨(DELETE + UPDATE)
 		
+		//주문 상품 중 마지막 상품을 취소시(주문 상세 테이블의 데이터가 1개이면) 체크 주문테이블, 결제 테이블 주문 정보 삭제
+		if(adOrderMapper.getorderDetailProductCount(o_code) == 1) {
+			
+			//주문 테이블 삭제
+			adOrderMapper.deleteOrder(o_code);
+			
+			//결제 테이블 삭제
+			adOrderMapper.deletePayment(o_code);
+			
+		}
+				
+		//주문 상세 테이블의 상품 삭제
 		adOrderMapper.orderDetailProductDelete(o_code, p_num);
+		
+		//주문 테이블의 총 주문 금액 변경
 		adOrderMapper.orderTotalPriceChange(o_code, o_unitprice);
+		//결제 테이블의 총 주문 금액 변경
 		adOrderMapper.paymentTotalPriceChange(o_code, o_unitprice);
 		
 	}

@@ -89,7 +89,8 @@ public class AdOrderController {
 		/*
 		 * for(int i=0; i<oCodeArr.size(); i++) {
 		 * 
-		 * //주문번호를 이용하여 삭제구문 진행 adOrderService.deleteOrder(oCodeArr.get(i));
+		 * //주문번호를 이용하여 삭제구문 진행 
+		 * adOrderService.deleteOrder(oCodeArr.get(i));
 		 * 
 		 * }
 		 */
@@ -153,6 +154,12 @@ public class AdOrderController {
 		rttr.addFlashAttribute("o_code", o_code);
 		
 		return "redirect:/admin/order/orderDetail";
+	}
+	
+	//주문 변경 이력
+	@GetMapping("/orderChangeHistory")
+	public void orderChangeHistory(Model model) {
+		
 	}
 
 }

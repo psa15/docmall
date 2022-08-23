@@ -16,4 +16,5 @@ public interface OrderService {
 	
 	//주문 하기 기능 : 주문 테이블(insert), 주문 상세테이블(insert), 장바구니 테이블(delete)->CartMapper
 	void orderBuy(OrderVO vo, PaymentVO payVO);
+
 }

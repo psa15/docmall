@@ -40,6 +40,9 @@ public interface AdOrderMapper {
 	void orderTotalPriceChange(@Param("o_code") Long o_code, @Param("o_unitprice") int o_unitprice);
 	//3)결제테이블 결제 금액 수정
 	void paymentTotalPriceChange(@Param("o_code") Long o_code, @Param("o_unitprice") int o_unitprice);
-	
+	//4) 주문 상세 테이블의 데이터가 1개임을 확인
+	int getorderDetailProductCount(Long o_code);
+	//5)결제 테이블 삭제
+	void deletePayment(Long o_code);
 }
 	

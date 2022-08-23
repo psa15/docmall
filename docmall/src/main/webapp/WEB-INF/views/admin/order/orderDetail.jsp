@@ -259,12 +259,13 @@ desired effect
 
           //주문 상태 변경 작업
           $("button[name='btnCancelProduct']").on("click", function(){
-            
+            console.log("버튼 클릭");
             let o_code = $(this).data("o_code");
             let p_num = $(this).data("p_num");
             let o_unitprice = $(this).data("o_unitprice");
+            console.log(o_code);
             
-            if(!confrim("주문 취소 하겠습니까")) return;
+            if(!confirm("주문 취소 하겠습니까")) return;
             
             location.href="/admin/order/orderUnitProductCancel?o_code=" + o_code + "&p_num=" + p_num + "&o_unitprice=" + o_unitprice;
             

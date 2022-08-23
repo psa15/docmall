@@ -54,6 +54,7 @@
           </a>
           <ul class="treeview-menu">
             <li><a href="/admin/order/orderList">주문목록</a></li>
+            <li><a href="/admin/order/orderChangeHistory">주문변경 기록(삭제 /수정)</a></li>
           </ul>
         </li>
         <li class="treeview">

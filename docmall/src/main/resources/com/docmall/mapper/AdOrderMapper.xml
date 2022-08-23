@@ -213,4 +213,26 @@
 	 		O_CODE = #{o_code}
 	 
 	 </update>
+	 
+	 <!-- 주문 상세 테이블의 데이터가 1개임을 확인 -->
+	 <select id="getorderDetailProductCount" resultType="int">
+	 
+	 	SELECT
+	 		COUNT(*)
+	 	FROM
+	 		TBL_ORDER_D
+	 	WHERE
+	 		O_CODE = #{o_code}
+	 
+	 </select>
+	 
+	 <!-- 결제 테이블 삭제 -->
+	 <delete id="deletePayment">
+	 
+	 	DELETE
+			PAYMENT_TBL
+		WHERE
+			O_CODE = #{o_code}
+	 
+	 </delete>
 </mapper>
