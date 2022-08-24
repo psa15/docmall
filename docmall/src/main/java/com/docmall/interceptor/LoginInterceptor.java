@@ -9,7 +9,10 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.docmall.domain.MemberVO;
 
+import lombok.extern.log4j.Log4j;
+
 //사용자 로그인
+@Log4j
 public class LoginInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
@@ -28,10 +31,19 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 			//인증 정보가 존재하지 않는다(비로그인 사용자)
 			result = false;
 			
-			//ex)사용자가 장바구니에 접근하려고 했다는 정보를 가지고 있는 메소드!
-			getDestination(request); //로그인이 끝난 후 보낼 주소 -> 로그인 메소드에서 사용
-			
-			response.sendRedirect("/member/login");			
+			//ajax요청인지 여부를 체크
+			if(isAjaxRequest(request)) {
+//				log.info("ajax요청임");
+				System.out.println("ajax요청임");
+				response.sendError(400);// ajax요청시 응답에러 코드 400 리턴.
+			} else {
+				System.out.println("ajax요청 아님");
+				
+				//ex)사용자가 장바구니에 접근하려고 했다는 정보를 가지고 있는 메소드!
+				getDestination(request); //로그인이 끝난 후 보낼 주소 -> 로그인 메소드에서 사용
+				
+				response.sendRedirect("/member/login");
+			}						
 			
 		}else {
 			//인증 정보가 존재한다. 로그인 사용자
@@ -40,6 +52,20 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 		
 		
 		return result; //true이면 controller로 제어가 넘어감
+	}
+
+	//ajax요청인지 확인
+	private boolean isAjaxRequest(HttpServletRequest request) {
+
+		boolean isAjax = false;
+		
+		//ajax구문에서 요청 시 헤더에 AJAX : "true" 를 작업
+		String header = request.getHeader("AJAX");
+		if("true".equals(header)) {
+			isAjax = true;
+		}
+		
+		return isAjax;
 	}
 
 	//브라우저가 인터셉터로 넘어올 때 요청했던 주소

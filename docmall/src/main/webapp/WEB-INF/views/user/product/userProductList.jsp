@@ -239,6 +239,12 @@
 					url: '/user/cart/addCart',
 					data: { p_num : $("div#modal_productDetail input#p_num").val(), cart_acount : $("div#modal_productDetail input#p_amount").val() },
 					dataType: 'text',
+					//로그인 하지 않은 사용자가 장바구니 담기를 선택했을 때
+					//ajax로 넘어간다고 header에 표시해 주어야 인터셉터에서 반응
+					beforeSend : function(xmlHttpRequest){
+						console.log("ajax xmlHttpRequest check");
+						xmlHttpRequest.RequestHeader("AJAX", "true");
+					},
 					success: function(result) {
 						if(result == "success") {
 							alert("장바구니가 추가되었습니다.");
@@ -246,6 +252,12 @@
 								location.href = "/user/cart/cartList";
 							}
 						}
+					},
+					//error가 나면 이유를 알려줘,,,? 이거 못들음 ㅠ
+					error: function(xhr, status, error) {
+						console.log("ajax error");
+						console.log("status" + status);
+						location.href="/member/login";
 					}
 				});
 			});
