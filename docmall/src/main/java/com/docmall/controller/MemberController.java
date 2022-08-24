@@ -166,6 +166,10 @@ public class MemberController {
 				//로그인 성공 시 서버측에 세션을 통한 정보 저장
 				//vo : 회원가입시 필요한 정보들이 loginStatus라는 이름으로 다 들어 있음
 				
+				//LoginInterceptor클래스의 preHandle()메소드에서 세션 형태로 저장한 것을 사용
+				String destination = (String) session.getAttribute("destination");
+				url = destination != null ? destination : "/";
+				
 				msg="loginSuccess";
 				
 			}else {	
