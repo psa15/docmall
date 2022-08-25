@@ -240,10 +240,10 @@
 					data: { p_num : $("div#modal_productDetail input#p_num").val(), cart_acount : $("div#modal_productDetail input#p_amount").val() },
 					dataType: 'text',
 					//로그인 하지 않은 사용자가 장바구니 담기를 선택했을 때
-					//ajax로 넘어간다고 header에 표시해 주어야 인터셉터에서 반응
-					beforeSend : function(xmlHttpRequest){
-						console.log("ajax xmlHttpRequest check");
-						xmlHttpRequest.RequestHeader("AJAX", "true");
+					//ajax로 넘어간다고 header에 표시하여 스프링에서 ajax 요청 방식이라고 전달 하기 위한 정보 설정
+					beforeSend : function(xmlHttpRequest) {
+		        		console.log("ajax xmlHttpRequest check"); 
+		        		xmlHttpRequest.setRequestHeader("AJAX", "true");
 					},
 					success: function(result) {
 						if(result == "success") {
@@ -253,11 +253,18 @@
 							}
 						}
 					},
-					//error가 나면 이유를 알려줘,,,? 이거 못들음 ㅠ
+					//response.sendError(400); 이 구문으로 인해 error로 리턴(정상적으로 값을 받지 못해서)되어 아래 함수가 진행됨
+					//ajax 호출하여, 스프링에서 에러 발생(500번 에러 X, 프로그램적 오류 아님)
+					//로그인인터셉터에서 return false가 되어 ajax에 false가 들어오는 것이 아니라 response 가 들어오는 것 근데 이게 error라고 온 것!
 					error: function(xhr, status, error) {
 						console.log("ajax error");
-						console.log("status" + status);
-						location.href="/member/login";
+						console.log("status" + xhr.status);
+						//location.href="/member/login";
+						
+						if(xhr.status == 400) {
+							alert("로그인 후 사용해 주세요");
+							location.href="/member/login";
+						}
 					}
 				});
 			});

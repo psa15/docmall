@@ -62,9 +62,11 @@
 		</interceptor>
 	</interceptors>
 	
-	<!-- 사용자 로그인 인터셉터 설정 -->
+	<!-- 사용자 + 관리자 로그인 인터셉터 설정 -->
 	<beans:bean id="loginInterceptor" class="com.docmall.interceptor.LoginInterceptor"></beans:bean>
+	<beans:bean id="adminInterceptor" class="com.docmall.interceptor.AdminInterceptor"></beans:bean>
 	<interceptors>
+		<!-- 사용자 인터셉터 설정 -->
 		<interceptor>
 			<!-- 인증된 경우에만 점근할 주소 설정 -->
 			<mapping path="/member/modify"/>
@@ -73,13 +75,12 @@
 			
 			<beans:ref bean="loginInterceptor"/>
 		</interceptor>
-	</interceptors>
-	
-	<!-- 관리자 인터셉터 설정 -->
-	<beans:bean id="adminInterceptor" class="com.docmall.interceptor.AdminInterceptor"></beans:bean>
-	<interceptors>
+		
+		<!-- 관리자 인터셉터 설정 -->
 		<interceptor>
-			<mapping path=""/>
+			<mapping path="/admin/**"/>
+			<exclude-mapping path="/admin/"/>
+			<exclude-mapping path="/admin/login"/>
 			<beans:ref bean="adminInterceptor"/>
 		</interceptor>
 	</interceptors>

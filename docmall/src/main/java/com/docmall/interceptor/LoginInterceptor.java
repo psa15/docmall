@@ -15,27 +15,39 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 public class LoginInterceptor extends HandlerInterceptorAdapter {
 
+	//return true -> controller 메소드가 진행됨
+	//return false -> controller 메소드 진행 X
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 
-		//request : 사용자가 브라우저에 한 행위를 기억
+		//jsp에서는 request.getParameter("userid") 로 작업했었으나 스프링에서는 생략시켜줘서 parameter 값만 같으면 받아와 지는 것!
+		
+		//request : 사용자가 브라우저에 한 행위를 기억(입력했던 데이터 등)
+		//response : 요청이 들어오면 서버에서 피드백의 결과로 무언갈 보내줘야 할 떼, 요청이 들어오면 서버에성 일련의 작업을 하고 그 결과가 담겨있는 객체
 		
 		boolean result = false;
+		//preHandle()메소드의 리턴타입이 boolean
 		
 		//인증된 사용자인지 여부를 체크 - 세션 객체를 확인
 		HttpSession session = request.getSession();
 		MemberVO user = (MemberVO) session.getAttribute("loginStatus");
+		//session.getAttribute("loginStatus");의 결과가 Object 형이어서 loginStatus의 원래 데이터 타입인 MemberVO로 변환
 		
 		if(user == null) {
 			//인증 정보가 존재하지 않는다(비로그인 사용자)
 			result = false;
 			
-			//ajax요청인지 여부를 체크
+			//비동기식 요청 : 서버에 요청을 보내놓고 결과 도착 유무에 상관없이 다른 것을 할 수 있음
+			//동기식 요청 : 서버에 요청을 보내놓고 결과 도착 해야 다른 작업 가능
+			
+			//ajax요청인지 여부를 체크(비동기식 요청)
 			if(isAjaxRequest(request)) {
 //				log.info("ajax요청임");
 				System.out.println("ajax요청임");
 				response.sendError(400);// ajax요청시 응답에러 코드 400 리턴.
+				//접근했던 주소(getDestination()메소드) 사용 X
+				
 			} else {
 				System.out.println("ajax요청 아님");
 				
@@ -55,12 +67,14 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 	}
 
 	//ajax요청인지 확인
+	//request 안에 ajax로 요청이 들어왔는지의 정보를 가지고 있음
 	private boolean isAjaxRequest(HttpServletRequest request) {
 
 		boolean isAjax = false;
 		
 		//ajax구문에서 요청 시 헤더에 AJAX : "true" 를 작업
 		String header = request.getHeader("AJAX");
+		
 		if("true".equals(header)) {
 			isAjax = true;
 		}
@@ -87,22 +101,6 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 			request.getSession().setAttribute("destination", destination);
 		}
 		
-	}
-
-	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-			ModelAndView modelAndView) throws Exception {
-		
-		
-		
-		super.postHandle(request, response, handler, modelAndView);
-	}
-
-	@Override
-	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-			throws Exception {
-		// TODO Auto-generated method stub
-		super.afterCompletion(request, response, handler, ex);
 	}
 
 }
