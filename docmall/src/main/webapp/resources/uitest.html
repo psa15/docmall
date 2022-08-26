@@ -41,7 +41,7 @@
             <td class="title"><p>비밀번호</p></td>
             <td>
             	<input type="password" name="pass" id="pass"> 
-            	영문/최소 1개의 숫자 또는 특수문자('~!@^*()-_+[]{}\:,.<>/)조합으로 8~16자리            
+            	영문/최소 1개의 숫자 또는 특수문자('~!@^*()-_+[]{}\:,.<>/)조합으로 8자 이상            
         </tr>
         <tr> 
             <td class="title"><p>비밀번호 확인</p></td>
@@ -52,15 +52,16 @@
             <td><input type="text" name="username" id="username"></td>            
         </tr>
         <tr>
-            <td class="title"><p>이메일</p></td>
-            <td><input type="text" name="email1" id="email1">@<input type="text" name="email2" id="email2"></td>            
-        </tr>        
-        <tr>
-        	<td class="title"><p>이메일 수신 여부</p></td>
+            <td class="title"><p>연락처</p></td>
             <td>
-                <input type="radio" name="emailchk" id="emailchk1" value="수신">수신
-                <input type="radio" name="emailchk" id="emailchk2" value="수신안함">수신 안함
-            </td>
+            	<select>
+            		<option value="010">010</option>
+            		<option value="011">011</option>
+            		<option value="02">02</option>
+            	</select>
+            	<input type="text" name="tel1" id="tel1">
+            	<input type="text" name="tel2" id="tel2">
+            </td>            
         </tr>
         <tr>
         	<td class="title"><p>비밀번호 확인시 질문</p></td>
@@ -149,12 +150,18 @@
 
                 //console.log("버튼 클릭");
                 
-            
-
                 if($("#userid").val() == "") {
                     alert("아이디를 입력해 주세요");
                     $("#userid").focus();
                     return;
+                }
+
+                let pass = $("#pass").val()
+                let passRgx = /^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/;
+                 if(!passRgx.test(pass)){
+                	alert("비밀번호는 영문 소문자와 숫자와 특수문자로 구성된 8자리 이상으로 조합하세요");
+                	$("#pass").focus();
+                	return;
                 }
                 
                 if($("#pass").val() == "") {
@@ -167,6 +174,7 @@
                     $("#pass2").focus();
                     return;
                 }
+                
                 if($("#pass").val() != $("#pass2").val()) {
                     alert("비밀번호가 일치하지 않습니다. 다시 확인해 주세요");
                     $("#pass").focus();
@@ -177,22 +185,33 @@
                     $("#username").focus();
                     return;
                 }
-                if($("#email1").val() == "") {
-                    alert("이메일을 입력해 주세요");
-                    $("#email1").focus();
+                
+                let telRgx = /^\d{3,4}$/;
+                let tel1 = $("#tel1").val();
+                if(!telRgx.test(tel1)) {
+                	alert("3자리 혹은 4자리의 숫자를 입력해 주세요");
+                	$("#tel1").focus();
+                	return;
+                }
+                if($("#tel1").val() == "") {
+                    alert("연락처를 입력해 주세요");
+                    $("#tel1").focus();
                     return;
                 }
-                if($("#email2").val() == "") {
-                    alert("이메일을 마저 입력해 주세요");
-                    $("#email2").focus();
+                
+                let telRgx2 = /^\d{4}$/;
+                let tel2 = $("#tel2").val();
+                if(!telRgx2.test(tel2)) {
+                	alert("4자리의 숫자를 입력해 주세요");
+                	$("#tel2").focus();
+                	return;
+                }
+                if($("#tel2").val() == "") {
+                    alert("연락처를 마저 입력해 주세요");
+                    $("#tel2").focus();
                     return;
                 }
 
-                if(!$("input[name='emailchk']:checked").is(':checked')) {
-                    alert("이메일 수신 여부를 선택해 주세요");
-                    $("#emailchk1").focus();
-                    return;
-                }
                 if($("#question").val() == "") {
                     alert("비밀번호 확인시 질문을 선택해 주세요");
                     $("#question").focus();
@@ -225,7 +244,9 @@
                     $("#bday").focus();
                     return;
                 }
-            })
+                
+                alert("회원가입이 완료되었습니다");
+            });
         });
     </script>
 </body>

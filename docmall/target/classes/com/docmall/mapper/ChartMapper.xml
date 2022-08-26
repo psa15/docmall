@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.mapper.ChartMapper">
+
+	<!-- 1차 카테고리 별 주문 -->
+	<select id="primaryChart" resultType="com.docmall.domain.ChartVO">
+	
+		  SELECT 
+		        C.CT_NAME AS primary_cd, SUM(OD.O_COST) AS sales_p
+		  FROM
+		        TBL_PRODUCT P, TBL_ORDER_D OD,(SELECT C2.CT_NAME, C1.CT_CODE FROM TBL_CATEGORY C1,  TBL_CATEGORY C2 WHERE c1.ct_p_code = c2.ct_code ) C
+		  WHERE 
+		  		P.P_NUM = OD.P_NUM AND P.S_CT_CODE = C.CT_CODE
+		  GROUP BY
+		        C.CT_NAME
+		  ORDER BY
+		        C.CT_NAME 
+	
+	</select>
+
+</mapper>

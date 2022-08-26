@@ -41,6 +41,12 @@ public class AdminInterceptor extends HandlerInterceptorAdapter{
 				//ex)사용자가 장바구니에 접근하려고 했다는 정보를 가지고 있는 메소드!
 				getDestination(request); //로그인이 끝난 후 보낼 주소 -> 로그인 메소드에서 사용
 				
+				//아래 코드를 작성하거나 설정에 추가
+				String uri = request.getRequestURI();
+				if(uri.equals("/admin/login")) {
+						return true;
+				}
+				
 				response.sendRedirect("/admin/");
 			}						
 			
