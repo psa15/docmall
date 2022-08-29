@@ -35,10 +35,14 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 	
-	<!-- 상품 등록을 위한 빈 설정 -->
+	<!-- 상품 등록을 위한 빈 설정
+		/usr/local/tomcat/upload
+	 -->
 	<beans:bean id="uploadPath" class="java.lang.String">
 		<beans:constructor-arg value="c:\\Dev\\upload\\"></beans:constructor-arg>
 	</beans:bean>
+	<!-- CKEditor 사용 리눅스 업로드 폴더 /usr/local/tomcat/tomcat9/webapps/upload
+	 -->
 	
 	<!-- 프로젝트 생성과 함께 자동 추가 -->
 	<context:component-scan base-package="com.docmall.controller" />
