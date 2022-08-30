@@ -35,9 +35,17 @@
 		
 		<load-on-startup>1</load-on-startup>
 		
-		<!-- 파일업로드 설정 - WAS(우린 톰캣사용중)자체 설정 /usr/local/tomcat/tomcat9/webapps/temp : 리눅스 경로 -->
+		<!-- 파일업로드 설정 - WAS(우린 톰캣사용중)자체 설정 -->
+		<!-- 윈도즈 개발용
 		<multipart-config>
 			<location>C:\\Dev\\upload</location>
+			<max-file-size>20971520</max-file-size> 20mb
+			<max-request-size>41943040</max-request-size> 40mb 
+			<file-size-threshold>20971520</file-size-threshold>
+		</multipart-config> -->
+		<!-- AWS 리눅스 경로 -->
+		<multipart-config>
+			<location>/usr/local/tomcat/tomcat9/webapps/temp</location>
 			<max-file-size>20971520</max-file-size><!-- 20mb -->
 			<max-request-size>41943040</max-request-size><!-- 40mb -->
 			<file-size-threshold>20971520</file-size-threshold>

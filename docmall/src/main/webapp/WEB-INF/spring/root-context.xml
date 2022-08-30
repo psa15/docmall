@@ -15,17 +15,27 @@
 	<!-- pom.xml의 dependency구문에 의해 다운받은 라이브러리에 존재하는 클래스들을 이용하여 bean(객체)를 생성한 의미 -->
 	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
 		<!--
-		서버에 올릴 때 : 
+		서버에 올릴 때 :
 		<property name="driverClassName" value="oracle.jdbc.OracleDriver" />
-		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe"></property>
-		로그로 에러메시지 확인할 때
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe"></property> -->
+		
+		<!--로그로 에러메시지 확인할 때
 		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy" />
 		<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe" />
-		  --> 
+		   
+		   윈도즈 개발용
 		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy" />
 		<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe" />
-		<property name="username" value="spring" />
+				<property name="username" value="spring" />
 		<property name="password" value="SPRING" />
+		
+		-->
+		<!--
+		서버에 올릴 때 : AWS용 -->
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver" />
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@db호스트:1521:sid작성"></property>
+		<property name="username" value="설정한 아이디" />
+		<property name="password" value="설정한 비밀번호" />
 	</bean>
 	
 	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">

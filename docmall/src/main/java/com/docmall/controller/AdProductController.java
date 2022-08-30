@@ -47,6 +47,9 @@ public class AdProductController {
 	@Resource(name = "uploadPath") 
 	private String uploadPath; //변수명이 같을 필요는 없음
 	
+	@Resource(name = "ckUploadPath")
+	private String ckUploadPath;
+	
 	@Setter(onMethod_ = {@Autowired})
 	private AdProductService adPService;
 	
@@ -93,13 +96,14 @@ public class AdProductController {
 			//서버측의 업로드폴더경로 작업. 1)프로젝트 내부  2)외부
 			//1)프로젝트 내부 : 톰캣이 war 파일로 리눅스서버에 배포를 할 경우, 톰캣이 재시작하면, 기존 upload폴더를 삭제해버린다. 
 			// 톰캣이 실제관리하는 물리적인 경로		
-			String uploadTomcatTempPath = req.getSession().getServletContext().getRealPath("/") + "resources\\upload\\";
-			log.info("톰캣 물리적 경로: " + uploadTomcatTempPath);
+			//String uploadTomcatTempPath = req.getSession().getServletContext().getRealPath("/") + "resources\\upload\\";
+			//log.info("톰캣 물리적 경로: " + uploadTomcatTempPath);
 			
 			//2)외부폴더(프로젝트 관리하는 폴더가 아님)
 			//작업시 톰캣의 server.xml의 <Context docBase="C:\\Dev\\upload\\ckeditor" path="/upload/" reloadable="true"/>설정 할것.
-			String uploadPath = "C:\\Dev\\upload\\ckeditor\\";
+			//String uploadPath = "C:\\Dev\\upload\\ckeditor\\";
 			//server.xml의 새로 추가한 경로를 참조해야 하기 때문에 docBase속성의 값과 같아야 함
+			String uploadPath = ckUploadPath; //servlet-context 설정 추가함
 			
 			log.info("외부 물리적 경로: " + uploadPath);
 			
